@@ -1,0 +1,12 @@
+<div class="w-screen h-screen bg-red-500 flex items-center justify-center">
+  <div id="map" #map class="h-[100vh] w-[100vw] bg-blue-950"></div>
+  <ul class="bg-slate-50 fixed max-h-max w-[10%] top-[2%] left-[89%]">
+    @for(marker of markerAndColor; track markerAndColor; let i = $index){
+    <li class="cursor-pointer" (click)="flyTo(marker.marker)" (dblclick)="deleteMarker(i)"
+      [ngStyle]="{backgroundColor : marker.color}">Punto {{i}}</li>
+    }
+  </ul>
+  <button (click)="agregarPoligono()"
+    class="fixed top-[90%] left-[87%] bg-slate-50 border-4 border-green-500 rounded-lg px-[0.7%] py-[0.2%] shadow-2xl">Añadir
+    marcador</button>
+</div>

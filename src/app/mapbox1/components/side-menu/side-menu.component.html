@@ -1,0 +1,9 @@
+<div class="bg-slate-500 fixed  w-[20%] top-[2%] left-[1%]">
+  <ul class="space-y-1">
+    @for(item of menuItems; track menuItems){
+    <li class="cursor-pointer transition-all duration-300  p-3 bg-gray-200 rounded-md" [routerLink]="[item.route]"
+      routerLinkActive="bg-gray-400">{{item.name}}
+    </li>
+    }
+  </ul>
+</div>

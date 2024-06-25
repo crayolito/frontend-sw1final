@@ -1,0 +1,115 @@
+<div class="h-full w-full ">
+  <form method="post" action="" class=" w-full h-[110%] mt-[2.5%] pb-[1%] flex flex-col items-center"
+    [formGroup]="formularioSupervisor" autocomplete="off" (ngSubmit)="procesarFormularioSupervidor()">
+    <!-- PARTE 1 -->
+    <!-- INICIO -->
+    <div class="flex flex-row w-[80%] h-[48%] gap-[2%] items-center justify-center">
+      <label for="fileUpload"
+        class="w-[580px] h-[450px] flex flex-col justify-center items-center text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue hover:text-white">
+        <img id="imagePreview" [src]="imageEmpresa()" alt=""
+          [class]="estadoImagen() ? 'w-full h-full object-contain' : 'w-[200px] h-[200px] object-contain'" />
+        <input id="fileUpload" type='file' class="hidden" (change)="seleccionarImagen($event)" />
+      </label>
+
+      <!-- </div> -->
+      <div class="w-[40%] h-[95%]">
+        <!-- NOMBRE DEL COMERCIAL -->
+        <div class="w-full h-[25%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Centro Comercial</p>
+          <input formControlName="nombreComercial" type=" text" placeholder="Nombre del Centro Comercial"
+            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+        <!-- DUEÑO DEL COMERCIAL  -->
+        <div class="w-full h-[25%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Dueño</p>
+          <input formControlName="nombreDueño" type=" text" placeholder="Nombre del Dueño"
+            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+        <!-- HORARIO ATENCION -->
+        <div class="w-full h-[25%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Horario Atencion</p>
+          <input formControlName="horarioAtencion" type=" text" placeholder="Horario Atencion"
+            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+        <!-- NRO ATENCION  -->
+        <div class="w-full h-[25%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Numero Atencion Cliente</p>
+          <input formControlName="numeroAtencion" type="number" placeholder="Telefono"
+            oninput="validity.valid||(value='1');"
+            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+      </div>
+    </div>
+    <!-- FIN -->
+
+    <!-- PARTE 2 -->
+    <!-- INICIO -->
+    <div class="flex flex-row w-[80%] h-[48%]  gap-[2%] items-center justify-center">
+      <div class="w-[40%] h-[100%] flex flex-col items-center justify-center">
+        <!-- Coordenada Longitud -->
+        <div class="w-full h-[32%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Coordenada Longitud</p>
+          <input formControlName="coordenadaLongitud" type="number" placeholder="Longitud"
+            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+        <!-- Coordenada Latitud -->
+        <div class="w-full h-[32%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Coordenada Latitud </p>
+          <input formControlName="coordenadaLatitud" type="number" placeholder="Latitud"
+            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+        <!-- UBICACION DESCRIPTIVA -->
+        <div class="w-full h-[32%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Ubicacion Descriptiva</p>
+          <input formControlName="ubicacionDescriptiva" type="text" placeholder="Detalle Ubicacion"
+            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+        <!-- Codigo Supervidor  -->
+        <div class="w-full h-[32%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Codigo Supervisor</p>
+          <input formControlName="codigoSupervidor" type="text" readonly
+            class=" rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+      </div>
+      <div class="w-[40%] h-[100%] flex flex-col items-center justify-center">
+        <!-- Url de Google Maps -->
+        <div class="w-full h-[32%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Google Maps</p>
+          <input formControlName="urlGoogleMaps" type=" text" placeholder="Url Google Maps"
+            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+        <!-- Formulario Quejas -->
+        <div class="w-full h-[32%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Formulario Quejas</p>
+          <input formControlName="urlFormQuejas" type="text" placeholder="Url Formulario Quejas"
+            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+        <!-- Url de pagina Web -->
+        <div class="w-full h-[32%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Web</p>
+          <input formControlName="urlWeb" type="text" placeholder="Url Pagina Web"
+            class=" rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+        <!-- Codigo Comerciante  -->
+        <div class="w-full h-[32%]  flex flex-col justify-between">
+          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Codigo Comerciante</p>
+          <input formControlName="codigoComerciante" type="text" readonly
+            class=" rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
+        </div>
+      </div>
+    </div>
+    <!-- FIN -->
+
+    <!-- PARTE 4 -->
+    <!-- INICIO -->
+    <div class="flex flex-row w-[80%] h-[10%]  items-center justify-end">
+      <button type="submit" class="h-[80%] w-[12%] rounded-xl bg-custom-primary mr-[9%] border-4 shadow-xl">
+        <p class="text-white font-bold font-google-anta text-3xl py-4" style="text-shadow: 2px 2px black;">
+          Guardar</p>
+      </button>
+    </div>
+    <! -- FIN -->
+  </form>
+  <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+  <script src="upload_widget.js" type="text/javascript"></script>
+</div>

@@ -1,0 +1,16 @@
+<div #map class="absolute inset-0" style="overflow: hidden"></div>
+<div class="flex flex-col absolute z-10 bg-slate-50 w-[30%] h-[14%] top-[85%] left-[1%] rounded-lg"
+  style="box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5)">
+  <section class="w-full h-[60%] flex flex-row items-center">
+    <button (click)="zoomIn()" class="w-[10%] h-[70%] rounded-md bg-yellow-700 font-bold mx-[1.2%]">
+      +
+    </button>
+    <input type="range" min="-2" max="18" class="slider" [value]="zoom" (input)="zoomChanged(zoomInput.value)"
+      #zoomInput />
+    <button (click)="zoomOut()" class="w-[10%] h-[70%] rounded-md bg-yellow-700 font-bold p-[1.5%] mx-[1.2%]">
+      -
+    </button>
+  </section>
+  <span class="text-xs h-[10%] mx-[2%] mb-[1%]">Zoom : {{ zoom | number : "2.2-2" }} <br />
+    Lng, Lat {{currentLngLat}}</span>
+</div>

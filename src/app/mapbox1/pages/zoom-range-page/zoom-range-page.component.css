@@ -1,0 +1,31 @@
+.slider {
+  -webkit-appearance: none; /* Elimina el estilo predeterminado */
+  width: 100%; /* Configura un ancho personalizado */
+  height: 15px; /* Configura una altura personalizada */
+  background: #d3d3d3; /* Configura un color de fondo personalizado */
+  outline: none; /* Elimina el contorno al hacer foco */
+  opacity: 0.7; /* Configura una opacidad personalizada */
+  transition: opacity .2s; /* Configura una transición de opacidad */
+}
+
+.slider:hover {
+  opacity: 2; /* Aumenta la opacidad al pasar el mouse */
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Elimina el estilo predeterminado */
+  appearance: none;
+  width: 25px; /* Configura un ancho personalizado */
+  height: 25px; /* Configura una altura personalizada */
+  background: #A16207; /* Configura un color de fondo personalizado */
+  cursor: pointer; /* Cambia el cursor a un puntero */
+  border-radius: 90%; /* Configura un borde redondeado */
+}
+
+.slider::-moz-range-thumb {
+  width: 25px; /* Configura un ancho personalizado */
+  height: 25px; /* Configura una altura personalizada */
+  background: #A16207; /* Configura un color de fondo personalizado */
+  cursor: pointer; /* Cambia el cursor a un puntero */
+  border-radius: 70%; /* Configura un borde redondeado */
+}
