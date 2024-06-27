@@ -121,15 +121,25 @@ export const routes: Routes = [
       import('./payment/payment.component'),
   },
   {
+    path: 'payment-success',
+    loadComponent: () =>
+      import('./payment/screens/success/success.component'),
+  },
+  {
+    path: 'payment-cancel',
+    loadComponent: () =>
+      import('./payment/screens/cancel/cancel.component'),
+  },
+  {
     path: 'geo-referenciacion',
     loadComponent: () =>
       import('./dashboard/screens/georeferenciacion-mapa/georeferenciacion-mapa.component'),
   },
   {
-    path: '', redirectTo: 'auth', pathMatch: 'full'
+    path: '', redirectTo: 'payment-success', pathMatch: 'full'
   },
   {
-    path: '**', redirectTo: 'auth', pathMatch: 'full'
+    path: '**', redirectTo: 'payment-success', pathMatch: 'full'
   }
 
 ];

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Router } from 'express';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cancel',
@@ -8,7 +8,7 @@ import { Router } from 'express';
   templateUrl: './cancel.component.html',
   styleUrl: './cancel.component.css'
 })
-export class CancelComponent {
+export default class CancelComponent {
   public router = inject(Router);
 
   ejecutarCancelacionPago(): void {
