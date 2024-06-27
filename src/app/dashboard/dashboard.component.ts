@@ -3,6 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import {
   AuthenticationService,
+  AuthUser,
   StatusAuthenticated,
 } from '../authentication/authentication.service';
 import { DashboardService, DashboardStatus } from './dashboard.service';
@@ -24,6 +25,7 @@ interface MenuItem {
 export default class DashboardComponent implements OnInit {
   public dashboardService = inject(DashboardService);
   public authenticationService = inject(AuthenticationService);
+  public authCentroComercial = inject(AuthenticationService);
   public router = inject(Router);
   public titulo1: string = "";
   public titulo2: string = "";
@@ -72,6 +74,10 @@ export default class DashboardComponent implements OnInit {
       status: DashboardStatus.productos,
     },
   ];
+
+  dataosAuth(): AuthUser {
+    return this.authCentroComercial.userAuth();
+  }
 
   ngOnInit(): void {
     this.inicializarDashboard();
@@ -157,5 +163,9 @@ export default class DashboardComponent implements OnInit {
       }
     }
     this.dashboardService.dashboardStatus.set(status);
+  }
+
+  cerraSesion(): void {
+    this.authenticationService.cerrarSesion();
   }
 }

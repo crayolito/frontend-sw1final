@@ -112,5 +112,7 @@ export class AuthenticationService {
       localStorage.removeItem('RolUsuario');
       this.confirmacionAuth.set(false);
     }
+
+    this.router.navigate(['/auth/login']);
   }
 }

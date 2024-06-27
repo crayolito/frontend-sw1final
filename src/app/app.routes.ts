@@ -136,10 +136,10 @@ export const routes: Routes = [
       import('./dashboard/screens/georeferenciacion-mapa/georeferenciacion-mapa.component'),
   },
   {
-    path: '', redirectTo: 'payment-success', pathMatch: 'full'
+    path: '', redirectTo: 'auth', pathMatch: 'full'
   },
   {
-    path: '**', redirectTo: 'payment-success', pathMatch: 'full'
+    path: '**', redirectTo: 'auth', pathMatch: 'full'
   }
 
 ];

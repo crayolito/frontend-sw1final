@@ -23,9 +23,9 @@
       </section>
       <section class="flex flex-row items-center justify-end gap-[4%] w-[30%] h-full">
         <p class="text-white text-2xl font-google-anta" style="text-shadow: 2px 2px black;">
-          {{"josalejandro@gmail.com"}}</p>
+          {{dataosAuth().email}}</p>
         <img src="assets/perfilAuth.svg" alt="" class="h-9 w-9">
-        <button>
+        <button (click)="cerraSesion()">
           <img src="assets/cerrar-sesion.svg" alt="" class="h-9 w-9">
         </button>
       </section>

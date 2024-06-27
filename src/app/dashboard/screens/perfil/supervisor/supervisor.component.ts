@@ -8,18 +8,20 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { authCentroComercial } from '../data';
 import { PerfilService } from '../perfil.service';
 
 export interface ICentroComercial {
   id: string;
+  imagen: string;
   nombreComercial: string;
   nombreDueño: string;
   horarioAtencion: string;
   numeroAtencion: number;
   coordenadaLongitud: string;
   coordenadaLatitud: string;
-  ubicacionDescriptiva: number;
+  ubicacionDescriptiva: string;
   urlGoogleMaps: string;
   urlFormQuejas: string;
   urlWeb: string;
@@ -46,6 +48,7 @@ export default class SupervisorComponent {
   public tiposHabitacion: string[] = [];
   // READ : ESTADO BUTTON SUBMIT
   public textButtonForm = signal<string>('Editar');
+  public router = inject(Router);
 
   public formularioSupervisor: FormGroup = this.formBuilder.group({
     nombreComercial: ['', [Validators.required]],
@@ -63,6 +66,30 @@ export default class SupervisorComponent {
   });
 
   ngOnInit(): void {
+    var usuario = localStorage.getItem('usuarioLogin');
+    if (usuario != null) {
+      this.estadoImagen.set(true);
+      this.imageEmpresa.set(authCentroComercial.imagen);
+
+      this.perfilService.supervidorComercial.set(authCentroComercial);
+      this.formularioSupervisor.setValue({
+        nombreComercial: authCentroComercial.nombreComercial,
+        nombreDueño: authCentroComercial.nombreDueño,
+        horarioAtencion: authCentroComercial.horarioAtencion,
+        numeroAtencion: authCentroComercial.numeroAtencion,
+        coordenadaLongitud: authCentroComercial.coordenadaLongitud,
+        coordenadaLatitud: authCentroComercial.coordenadaLatitud,
+        ubicacionDescriptiva: authCentroComercial.ubicacionDescriptiva,
+        urlGoogleMaps: authCentroComercial.urlGoogleMaps,
+        urlFormQuejas: authCentroComercial.urlFormQuejas,
+        urlWeb: authCentroComercial.urlWeb,
+        codigoComerciante: authCentroComercial.codigoComerciante,
+        codigoSupervidor: authCentroComercial.codigoSupervidor,
+      });
+    } else {
+      this.router.navigate(['/auth/login']);
+    }
+
   }
 
 

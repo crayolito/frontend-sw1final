@@ -2,19 +2,21 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthenticationService, StatusAuthenticated } from '../../../../authentication/authentication.service';
+import { authComerciante } from '../data';
 import { PerfilService } from '../perfil.service';
 
 export interface IComerciante {
   id: string;
+  imagen: string;
   nombreNegocio: string;
   nombreDueño: string;
   horarioAtencion: string;
   numeroAtencion: number;
   coordenadaLongitud: string;
   coordenadaLatitud: string;
-  ubicacionDescriptiva: number;
+  ubicacionDescriptiva: string;
   urlGoogleMaps: string;
   urlFormQuejas: string;
   urlWeb: string;
@@ -32,6 +34,7 @@ export default class ComercianteComponent implements OnInit {
   public perfilService = inject(PerfilService);
   public http = inject(HttpClient);
   public formBuilder = inject(FormBuilder);
+  public router = inject(Router);
   // READ : ESTADO DE IMAGEN Y URL DE IMAGEN
   public imageEmpresa = signal<string>('assets/subirImagen.png');
   public estadoImagen = signal<boolean>(false);
@@ -71,11 +74,27 @@ export default class ComercianteComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    if (typeof localStorage !== 'undefined') {
-      if (localStorage.getItem('usuarioLogin') !== null) {
-        // READ : INICIALIZAR LOS DATOS DEL PERFIL DE LA AGENCIA DE ALOJAMIENTO
-        var comercianteUser: string = localStorage.getItem('usuarioLogin')!;
-      }
+    var usuario = localStorage.getItem('usuarioLogin');
+    if (usuario != null) {
+      this.estadoImagen.set(true);
+      this.imageEmpresa.set(authComerciante.imagen);
+
+      this.perfilService.comercianteCaseta.set(authComerciante);
+      this.formularioComerciante.setValue({
+        nombreNegocio: authComerciante.nombreNegocio,
+        nombreDueño: authComerciante.nombreDueño,
+        horarioAtencion: authComerciante.horarioAtencion,
+        numeroAtencion: authComerciante.numeroAtencion,
+        coordenadaLongitud: authComerciante.coordenadaLongitud,
+        coordenadaLatitud: authComerciante.coordenadaLatitud,
+        ubicacionDescriptiva: authComerciante.ubicacionDescriptiva,
+        urlGoogleMaps: authComerciante.urlGoogleMaps,
+        urlFormQuejas: authComerciante.urlFormQuejas,
+        urlWeb: authComerciante.urlWeb,
+        categoria: authComerciante.categoria
+      });
+    } else {
+      this.router.navigate(['/auth/login']);
     }
   }
 

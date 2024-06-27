@@ -17,13 +17,14 @@ export class PerfilService {
   public http = inject(HttpClient);
   public comercianteCaseta = signal<IComerciante>({
     id: '',
+    imagen: "",
     nombreNegocio: '',
     nombreDueño: '',
     horarioAtencion: '',
     numeroAtencion: 0,
     coordenadaLongitud: '',
     coordenadaLatitud: '',
-    ubicacionDescriptiva: 0,
+    ubicacionDescriptiva: "",
     urlGoogleMaps: '',
     urlFormQuejas: '',
     urlWeb: '',
@@ -31,13 +32,14 @@ export class PerfilService {
   })
   public supervidorComercial = signal<ICentroComercial>({
     id: '',
+    imagen: "",
     nombreComercial: '',
     nombreDueño: '',
     horarioAtencion: '',
     numeroAtencion: 0,
     coordenadaLongitud: '',
     coordenadaLatitud: '',
-    ubicacionDescriptiva: 0,
+    ubicacionDescriptiva: "",
     urlGoogleMaps: '',
     urlFormQuejas: '',
     urlWeb: '',
