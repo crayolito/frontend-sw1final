@@ -8,17 +8,17 @@ import { PaymentService } from '../../payment.service';
   standalone: true,
   imports: [],
   templateUrl: './success.component.html',
-  styleUrl: './success.component.css'
+  styleUrl: './success.component.css',
 })
 export default class SuccessComponent {
   public paymentService = inject(PaymentService);
   public router = inject(Router);
-  public tipoVenta: string = "";
+  public tipoVenta: string = '';
   public diasEstancia: number = 0;
   public precioNoche: number = 0;
   public precioTotal: number = 0;
   public descuento: number = 0;
-  public idViajero: string = "";
+  public idViajero: string = '';
 
   descargarPDF(): void {
     if (typeof localStorage !== 'undefined') {
@@ -32,18 +32,17 @@ export default class SuccessComponent {
 
       if (this.tipoVenta == 'premium') {
         this.pdfServicioPermium();
-        this.router.navigate(['/auth/login']);
+        // this.router.navigate(['/auth/login']);
         return;
       }
 
       if (this.tipoVenta == 'empresial') {
         this.pdfServicioOnEmpresarial();
-        this.router.navigate(['/auth/login']);
+        // this.router.navigate(['/auth/login']);
         return;
       }
     }
   }
-
 
   pdfServicioPermium(): void {
     let doc = new jsPDF();
@@ -84,4 +83,3 @@ export default class SuccessComponent {
     doc.save('suscripcion_free.pdf');
   }
 }
-

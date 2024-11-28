@@ -10,7 +10,13 @@ export class Subcripcion {
   descripcion: string;
   caracteristicas: string[];
 
-  constructor(titulo: string, icono: string, estado: StatusSubcripcion, descripcion: string, caracteristicas: string[]) {
+  constructor(
+    titulo: string,
+    icono: string,
+    estado: StatusSubcripcion,
+    descripcion: string,
+    caracteristicas: string[]
+  ) {
     this.titulo = titulo;
     this.icono = icono;
     this.estado = estado;
@@ -18,72 +24,75 @@ export class Subcripcion {
     this.caracteristicas = caracteristicas;
   }
 }
-export enum StatusSubcripcion { free, premium, empresial, none }
+export enum StatusSubcripcion {
+  free,
+  premium,
+  empresial,
+  none,
+}
 
 @Component({
   selector: 'app-payment',
   standalone: true,
   imports: [],
   templateUrl: './payment.component.html',
-  styleUrl: './payment.component.css'
+  styleUrl: './payment.component.css',
 })
 export default class PaymentComponent {
   public paymentService = inject(PaymentService);
   public router = inject(Router);
   public statusSubcripcion = signal<StatusSubcripcion>(StatusSubcripcion.none);
   supcricion1: Subcripcion = new Subcripcion(
-    "Free",
-    "assets/gratis.svg",
+    'Free',
+    'assets/gratis.svg',
     StatusSubcripcion.free,
-    "Accede a funciones básicas para registrar y administrar tu centro comercial sin costo pero con un limite de solo 20 comerciantes.",
+    'Accede a funciones básicas para registrar y administrar tu centro comercial sin costo pero con un limite de solo 20 comerciantes.',
     [
-      "Registro de centro comercial y comerciantes.",
-      "Creación de mapa con puntos de interés de forma manual.",
-      "Delimitación geográfica del centro.",
-      "Soporte por correo electrónico."
+      'Registro de centro comercial y comerciantes.',
+      'Creación de mapa con puntos de interés de forma manual.',
+      'Delimitación geográfica del centro.',
+      'Soporte por correo electrónico.',
     ]
   );
 
   supcricion2: Subcripcion = new Subcripcion(
-    "Premium 349Bs/mes",
-    "assets/subcripcion.svg",
+    'Premium 349Bs/mes',
+    'assets/subcripcion.svg',
     StatusSubcripcion.premium,
-    "Funciones avanzadas para una mejor gestión productos y marketing basico de tu centro comercial y un registro limitado de 70 comerciantes.",
+    'Funciones avanzadas para una mejor gestión productos y marketing basico de tu centro comercial y un registro limitado de 70 comerciantes.',
     [
-      "Todo lo del paquete Free.",
-      "Representación detallada de pasillos y pisos.",
-      "Inclusión de redes sociales y opciones de envío.",
-      "Coordinación avanzada mediante Autocad y ArcGis."
+      'Todo lo del paquete Free.',
+      'Representación detallada de pasillos y pisos.',
+      'Inclusión de redes sociales y opciones de envío.',
+      'Coordinación avanzada mediante Autocad y ArcGis.',
     ]
   );
 
   supcricion3: Subcripcion = new Subcripcion(
-    "Pro 3141Bs/Anual",
-    "assets/on-premises.svg",
+    'Pro 3141Bs/Anual',
+    'assets/on-premises.svg',
     StatusSubcripcion.empresial,
-    "Solución completa con soporte prioritario y funciones exclusivas para grandes centros comerciales.",
+    'Solución completa con soporte prioritario y funciones exclusivas para grandes centros comerciales.',
     [
-      "Todo lo del paquete Premium.",
-      "Registro ilimitado de casetas.",
-      "Soporte prioritario 24/7.",
-      "Consultoría personalizada y herramientas avanzadas."
+      'Todo lo del paquete Premium.',
+      'Registro ilimitado de casetas.',
+      'Soporte prioritario 24/7.',
+      'Consultoría personalizada y herramientas avanzadas.',
     ]
   );
 
   supcripciones: Subcripcion[] = [
     this.supcricion1,
     this.supcricion2,
-    this.supcricion3
+    this.supcricion3,
   ];
-
-
 
   procesarPagoSeleccionado(select: Subcripcion) {
     switch (select.estado) {
       case StatusSubcripcion.free:
         this.statusSubcripcion.set(select.estado);
         this.pdfFree();
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['']);
         return;
       case StatusSubcripcion.premium:
         this.statusSubcripcion.set(select.estado);
@@ -111,8 +120,6 @@ export default class PaymentComponent {
         break;
     }
   }
-
-
 
   pdfFree(): void {
     let doc = new jsPDF();

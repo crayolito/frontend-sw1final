@@ -1,9 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthenticationService, StatusAuthenticated } from '../../../../authentication/authentication.service';
+import {
+  AuthenticationService,
+  StatusAuthenticated,
+} from '../../../../authentication/authentication.service';
 import { authComerciante } from '../data';
 import { PerfilService } from '../perfil.service';
 
@@ -27,7 +36,7 @@ export interface IComerciante {
   standalone: true,
   imports: [RouterModule, CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './comerciante.component.html',
-  styleUrl: './comerciante.component.css'
+  styleUrl: './comerciante.component.css',
 })
 export default class ComercianteComponent implements OnInit {
   public authenticationService = inject(AuthenticationService);
@@ -43,11 +52,8 @@ export default class ComercianteComponent implements OnInit {
   // READ : ESTADO BUTTON SUBMIT
   public textButtonForm = signal<string>('Editar');
   // READ : ESTADOS DEL COMERCIANTE ANTE SUPERVIDOR
-  public valueSelectEstado = "";
-  public difEstadoComerciante: string[] = [
-    'Activo',
-    'Inactivo',
-  ];
+  public valueSelectEstado = '';
+  public difEstadoComerciante: string[] = ['Activo', 'Inactivo'];
 
   // NOTE: ACTUALIZAR EL VALOR DEL ESTADO DE LA OFERTA
   updateSelectEstado(value: string) {
@@ -56,7 +62,10 @@ export default class ComercianteComponent implements OnInit {
 
   // NOTE : VERIFICAR SI ES UN SUPERVIDOR
   esSupervisor(): boolean {
-    return this.authenticationService.statusAuthenticated() == StatusAuthenticated.supervisor;
+    return (
+      this.authenticationService.statusAuthenticated() ==
+      StatusAuthenticated.supervisor
+    );
   }
 
   public formularioComerciante: FormGroup = this.formBuilder.group({
@@ -91,10 +100,10 @@ export default class ComercianteComponent implements OnInit {
         urlGoogleMaps: authComerciante.urlGoogleMaps,
         urlFormQuejas: authComerciante.urlFormQuejas,
         urlWeb: authComerciante.urlWeb,
-        categoria: authComerciante.categoria
+        categoria: authComerciante.categoria,
       });
     } else {
-      this.router.navigate(['/auth/login']);
+      // this.router.navigate(['/auth/login']);
     }
   }
 
@@ -112,20 +121,17 @@ export default class ComercianteComponent implements OnInit {
   seleccionarImagen(event: any) {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      this.perfilService.uploadToCloudinary(file)
-        .subscribe({
-          next: (response: any) => {
-            this.imageEmpresa.set(response.secure_url);
-            this.estadoImagen.set(true);
-          },
-          error: (e: any) => {
-            console.log(e);
-          },
-        });
+      this.perfilService.uploadToCloudinary(file).subscribe({
+        next: (response: any) => {
+          this.imageEmpresa.set(response.secure_url);
+          this.estadoImagen.set(true);
+        },
+        error: (e: any) => {
+          console.log(e);
+        },
+      });
     }
   }
 
-  procesarFormularioComerciante(): void {
-
-  }
+  procesarFormularioComerciante(): void {}
 }

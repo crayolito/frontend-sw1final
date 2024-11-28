@@ -29,13 +29,12 @@ export interface ICentroComercial {
   codigoSupervidor: string;
 }
 
-
 @Component({
   selector: 'app-supervisor',
   standalone: true,
   imports: [RouterModule, CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './supervisor.component.html',
-  styleUrl: './supervisor.component.css'
+  styleUrl: './supervisor.component.css',
 })
 export default class SupervisorComponent {
   public perfilService = inject(PerfilService);
@@ -87,32 +86,25 @@ export default class SupervisorComponent {
         codigoSupervidor: authCentroComercial.codigoSupervidor,
       });
     } else {
-      this.router.navigate(['/auth/login']);
+      // this.router.navigate(['/auth/login']);
     }
-
   }
-
-
-
 
   // NOTE : SELECCIONAR IMAGEN
   seleccionarImagen(event: any) {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      this.perfilService.uploadToCloudinary(file)
-        .subscribe({
-          next: (response: any) => {
-            this.imageEmpresa.set(response.secure_url);
-            this.estadoImagen.set(true);
-          },
-          error: (e: any) => {
-            console.log(e);
-          },
-        });
+      this.perfilService.uploadToCloudinary(file).subscribe({
+        next: (response: any) => {
+          this.imageEmpresa.set(response.secure_url);
+          this.estadoImagen.set(true);
+        },
+        error: (e: any) => {
+          console.log(e);
+        },
+      });
     }
   }
 
-  procesarFormularioSupervidor(): void {
-
-  }
+  procesarFormularioSupervidor(): void {}
 }

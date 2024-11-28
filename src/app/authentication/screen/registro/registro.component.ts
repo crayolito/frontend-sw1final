@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthenticationService, AuthUser } from '../../authentication.service';
 
@@ -9,17 +15,14 @@ import { AuthenticationService, AuthUser } from '../../authentication.service';
   standalone: true,
   imports: [RouterModule, CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './registro.component.html',
-  styleUrl: './registro.component.css'
+  styleUrl: './registro.component.css',
 })
 export default class RegistroComponent {
   public formBuilder = inject(FormBuilder);
   public router = inject(Router);
   public authenticationService = inject(AuthenticationService);
 
-  public estatus: string[] = [
-    "Comerciante",
-    "Supervisor",
-  ]
+  public estatus: string[] = ['Comerciante', 'Supervisor'];
 
   // NOTE: FORMULARIO DE INICIO SESION
   public formularioRegistro: FormGroup = this.formBuilder.group({
@@ -27,7 +30,7 @@ export default class RegistroComponent {
     password1: ['', [Validators.required]],
     password2: ['', [Validators.required]],
     estatus: ['', [Validators.required]],
-    codigo: ['', [Validators.required]]
+    codigo: ['', [Validators.required]],
   });
 
   viewColaborador(value: string): void {
@@ -35,23 +38,27 @@ export default class RegistroComponent {
   }
 
   procesarFormulario(): void {
-    const { email, password1, password2, estatus } = this.formularioRegistro.value;
+    const { email, password1, password2, estatus } =
+      this.formularioRegistro.value;
     if (password1 !== password2) {
-      alert("Las contraseñas no coinciden");
+      alert('Las contraseñas no coinciden');
       return;
     }
-    this.authenticationService.procesarRegistro(email, password1, estatus)
+    this.authenticationService
+      .procesarRegistro(email, password1, estatus)
       .subscribe(
         (responseAuthUser: AuthUser) => {
           // console.log(responseAuthUser);
-          if (responseAuthUser.role == "Supervisor") {
-            this.authenticationService.procesoCrearUnCentroComercial(responseAuthUser.id);
+          if (responseAuthUser.role == 'Supervisor') {
+            this.authenticationService.procesoCrearUnCentroComercial(
+              responseAuthUser.id
+            );
           }
-          this.router.navigate(['/auth/login']);
+          // this.router.navigate(['/auth/login']);
         },
         (error: any) => {
           // console.log(error);
-        });
-
+        }
+      );
   }
 }

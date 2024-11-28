@@ -6,12 +6,12 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [],
   templateUrl: './cancel.component.html',
-  styleUrl: './cancel.component.css'
+  styleUrl: './cancel.component.css',
 })
 export default class CancelComponent {
   public router = inject(Router);
 
   ejecutarCancelacionPago(): void {
-    this.router.navigate(['/auth/login']);
+    // this.router.navigate(['/auth/login']);
   }
 }
