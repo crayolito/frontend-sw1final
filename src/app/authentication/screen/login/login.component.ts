@@ -1,3 +1,4 @@
+// En login.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import {
@@ -9,48 +10,79 @@ import {
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { PerfilService } from '../../../dashboard/screens/perfil/perfil.service';
-import { AuthenticationService } from '../../authentication.service';
+import { ModalService } from '../../../shared/components/modal/modal.service';
+import {
+  AuthenticationService,
+  StatusAuthenticated,
+} from '../../authentication.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [RouterModule, CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
 })
 export default class LoginComponent {
   public router = inject(Router);
   public formBuilder = inject(FormBuilder);
   public authenticationService = inject(AuthenticationService);
   public perfilService = inject(PerfilService);
+  public modalService = inject(ModalService);
 
-  // NOTE : FORMULARIO de INICIO SESION
   public formularioLogin: FormGroup = this.formBuilder.group({
-    email: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
-    colaborador: ['', [Validators.required]],
+    colaborador: ['', [Validators.required, Validators.minLength(4)]],
   });
 
   procesarFormularioLogin(): void {
-    // const { email, password, colaborador } = this.formularioLogin.value;
-    // this.authenticationService.procesarLogin(email, password, colaborador)
-    //   .subscribe((responseAuthUser: AuthUser) => {
-    //     console.log(responseAuthUser);
-    //     localStorage.setItem('usuarioLogin', JSON.stringify(responseAuthUser));
-    //     this.authenticationService.userAuth.set(responseAuthUser);
-    //     this.authenticationService.confirmacionAuth.set(true);
-    //     if (responseAuthUser.role == "Supervisor") {
-    //       this.router.navigate(['/dashboard/perfil-supervisor']);
-    //       this.authenticationService.statusAuthenticated.set(StatusAuthenticated.supervisor);
-    //       localStorage.setItem('RolUsuario', JSON.stringify("Supervisor"));
-    //       this.perfilService.supervidorComercial.set(authCentroComercial);
-    //     } else {
-    //       this.router.navigate(['/dashboard/perfil-comerciante']);
-    //       this.authenticationService.statusAuthenticated.set(StatusAuthenticated.comerciante);
-    //       localStorage.setItem('RolUsuario', JSON.stringify("Comerciante"));
-    //       this.perfilService.comercianteCaseta.set(authComerciante);
-    //     }
-    //   }, (error: any) => {
-    //   });
+    if (this.formularioLogin.invalid) {
+      this.modalService.showError(
+        'Por favor, complete todos los campos correctamente'
+      );
+      return;
+    }
+
+    const { email, password, colaborador } = this.formularioLogin.value;
+
+    this.authenticationService
+      .procesarLogin(email, password, colaborador)
+      .subscribe({
+        next: (responseAuthUser) => {
+          localStorage.setItem(
+            'usuarioLogin',
+            JSON.stringify(responseAuthUser)
+          );
+          this.authenticationService.userAuth.set(responseAuthUser);
+          this.authenticationService.confirmacionAuth.set(true);
+
+          const esSupervisor =
+            responseAuthUser.role.toLowerCase() === 'supervisor';
+          const ruta = esSupervisor
+            ? '/dashboard/perfil-supervisor'
+            : '/dashboard/perfil-comerciante';
+          const rol = esSupervisor ? 'Supervisor' : 'Comerciante';
+
+          // Mensaje unificado de éxito
+          this.modalService.showSuccess(
+            `¡Inicio de sesión exitoso! Redirigiendo a su perfil de ${rol}...`
+          );
+
+          // Configurar estado y navegar después de un breve delay
+          setTimeout(() => {
+            this.authenticationService.statusAuthenticated.set(
+              esSupervisor
+                ? StatusAuthenticated.supervisor
+                : StatusAuthenticated.comerciante
+            );
+            localStorage.setItem('RolUsuario', rol);
+            this.router.navigate([ruta]);
+          }, 2000);
+        },
+        error: (error) => {
+          this.modalService.showError('Credenciales incorrectas');
+          console.error('Error en login:', error);
+        },
+      });
   }
 }

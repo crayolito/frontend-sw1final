@@ -1,5 +1,33 @@
-<div class="bg-slate-50 w-screen h-screen flex flex-col items-center justify-center">
-  <button (click)="descargarPDF()"
-    class="rounded-xl px-2 py-3 shadow-custom-shadow border-4 bg-custom-primary font-google-anta font-bold text-white text-2xl hover:bg-green-600">Descargar<br>Comprobante
-    de Pago</button>
+<div
+  class="bg-gradient-to-br from-custom-primary to-custom-secondary w-screen h-screen flex items-center justify-center"
+>
+  <div
+    class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-custom-shadow p-10 flex flex-col items-center space-y-8 mx-4"
+  >
+    <h1
+      class="text-5xl font-google-anta font-bold text-white text-center shadow-text"
+    >
+      ¡Obtén tu Comprobante de Pago!
+    </h1>
+    <button
+      (click)="descargarPDF()"
+      class="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-2xl font-google-anta font-bold text-white rounded-full group bg-gradient-to-br from-custom-primary to-custom-secondary group-hover:from-custom-secondary group-hover:to-custom-primary focus:ring-4 focus:outline-none focus:ring-custom-secondary shadow-custom-shadow transition-all duration-300 transform hover:scale-105"
+    >
+      <span
+        class="relative px-10 py-5 transition-all ease-in duration-300 bg-white bg-opacity-0 rounded-full group-hover:bg-opacity-10"
+      >
+        Descargar PDF
+      </span>
+    </button>
+    <!-- (click)="volverAlInicio()" -->
+    <button
+      class="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-xl font-google-anta font-bold text-white rounded-full group bg-gradient-to-br from-gray-700 to-gray-900 group-hover:from-gray-900 group-hover:to-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-500 mt-5 shadow-custom-shadow transition-all duration-300 transform hover:scale-105"
+    >
+      <span
+        class="relative px-8 py-4 transition-all ease-in duration-300 bg-white bg-opacity-0 rounded-full group-hover:bg-opacity-10"
+      >
+        Volver al Inicio
+      </span>
+    </button>
+  </div>
 </div>

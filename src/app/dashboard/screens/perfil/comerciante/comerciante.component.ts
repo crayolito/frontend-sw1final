@@ -1,6 +1,13 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  Inject,
+  inject,
+  OnInit,
+  PLATFORM_ID,
+  signal,
+} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -39,78 +46,87 @@ export interface IComerciante {
   styleUrl: './comerciante.component.css',
 })
 export default class ComercianteComponent implements OnInit {
-  public authenticationService = inject(AuthenticationService);
-  public perfilService = inject(PerfilService);
-  public http = inject(HttpClient);
-  public formBuilder = inject(FormBuilder);
-  public router = inject(Router);
-  // READ : ESTADO DE IMAGEN Y URL DE IMAGEN
+  private authService = inject(AuthenticationService);
+  private perfilService = inject(PerfilService);
+  private http = inject(HttpClient);
+  private formBuilder = inject(FormBuilder);
+  private router = inject(Router);
+  private isBrowser: boolean;
+
+  // Signals
   public imageEmpresa = signal<string>('assets/subirImagen.png');
   public estadoImagen = signal<boolean>(false);
-  // READ : VECTOR DE TIPOS DE HABITACIONES
-  public categoriasProductos: string[] = [];
-  // READ : ESTADO BUTTON SUBMIT
   public textButtonForm = signal<string>('Editar');
-  // READ : ESTADOS DEL COMERCIANTE ANTE SUPERVIDOR
+
+  // Estado
+  public categoriasProductos: string[] = [];
   public valueSelectEstado = '';
-  public difEstadoComerciante: string[] = ['Activo', 'Inactivo'];
+  public readonly difEstadoComerciante: string[] = ['Activo', 'Inactivo'];
 
-  // NOTE: ACTUALIZAR EL VALOR DEL ESTADO DE LA OFERTA
-  updateSelectEstado(value: string) {
-    this.valueSelectEstado = value;
+  public formularioComerciante?: FormGroup;
+  constructor(@Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+    this.initForm();
   }
 
-  // NOTE : VERIFICAR SI ES UN SUPERVIDOR
-  esSupervisor(): boolean {
-    return (
-      this.authenticationService.statusAuthenticated() ==
-      StatusAuthenticated.supervisor
-    );
+  private initForm(): void {
+    this.formularioComerciante = this.formBuilder.group({
+      nombreNegocio: ['', [Validators.required]],
+      nombreDueño: ['', [Validators.required]],
+      horarioAtencion: ['', [Validators.required]],
+      numeroAtencion: [0, [Validators.required]],
+      coordenadaLongitud: ['', [Validators.required]],
+      coordenadaLatitud: ['', [Validators.required]],
+      ubicacionDescriptiva: [0, [Validators.required]],
+      urlGoogleMaps: ['', [Validators.required]],
+      urlFormQuejas: ['', [Validators.required]],
+      urlWeb: ['', [Validators.required]],
+      categoria: ['', [Validators.required]],
+    });
   }
-
-  public formularioComerciante: FormGroup = this.formBuilder.group({
-    nombreNegocio: ['', [Validators.required]],
-    nombreDueño: ['', [Validators.required]],
-    horarioAtencion: ['', [Validators.required]],
-    numeroAtencion: [0, [Validators.required]],
-    coordenadaLongitud: ['', [Validators.required]],
-    coordenadaLatitud: ['', [Validators.required]],
-    ubicacionDescriptiva: [0, [Validators.required]],
-    urlGoogleMaps: ['', [Validators.required]],
-    urlFormQuejas: ['', [Validators.required]],
-    urlWeb: ['', [Validators.required]],
-    categoria: ['', [Validators.required]],
-  });
 
   ngOnInit(): void {
-    var usuario = localStorage.getItem('usuarioLogin');
-    if (usuario != null) {
-      this.estadoImagen.set(true);
-      this.imageEmpresa.set(authComerciante.imagen);
-
-      this.perfilService.comercianteCaseta.set(authComerciante);
-      this.formularioComerciante.setValue({
-        nombreNegocio: authComerciante.nombreNegocio,
-        nombreDueño: authComerciante.nombreDueño,
-        horarioAtencion: authComerciante.horarioAtencion,
-        numeroAtencion: authComerciante.numeroAtencion,
-        coordenadaLongitud: authComerciante.coordenadaLongitud,
-        coordenadaLatitud: authComerciante.coordenadaLatitud,
-        ubicacionDescriptiva: authComerciante.ubicacionDescriptiva,
-        urlGoogleMaps: authComerciante.urlGoogleMaps,
-        urlFormQuejas: authComerciante.urlFormQuejas,
-        urlWeb: authComerciante.urlWeb,
-        categoria: authComerciante.categoria,
-      });
-    } else {
-      // this.router.navigate(['/auth/login']);
+    if (this.isBrowser) {
+      const usuario = this.authService.getFromLocalStorage('usuarioLogin');
+      if (usuario) {
+        this.initializeComerciante();
+      }
     }
   }
 
+  private initializeComerciante(): void {
+    this.estadoImagen.set(true);
+    this.imageEmpresa.set(authComerciante.imagen);
+    this.perfilService.comercianteCaseta.set(authComerciante);
+
+    this.formularioComerciante!.patchValue({
+      nombreNegocio: authComerciante.nombreNegocio,
+      nombreDueño: authComerciante.nombreDueño,
+      horarioAtencion: authComerciante.horarioAtencion,
+      numeroAtencion: authComerciante.numeroAtencion,
+      coordenadaLongitud: authComerciante.coordenadaLongitud,
+      coordenadaLatitud: authComerciante.coordenadaLatitud,
+      ubicacionDescriptiva: authComerciante.ubicacionDescriptiva,
+      urlGoogleMaps: authComerciante.urlGoogleMaps,
+      urlFormQuejas: authComerciante.urlFormQuejas,
+      urlWeb: authComerciante.urlWeb,
+      categoria: authComerciante.categoria,
+    });
+  }
+
+  public updateSelectEstado(value: string): void {
+    this.valueSelectEstado = value;
+  }
+
+  public esSupervisor(): boolean {
+    return (
+      this.authService.statusAuthenticated() === StatusAuthenticated.supervisor
+    );
+  }
   addCategoria(): void {
-    let categoria = this.formularioComerciante.value.categoria;
+    let categoria = this.formularioComerciante!.value.categoria;
     this.categoriasProductos.push(categoria);
-    this.formularioComerciante.controls['categoria'].setValue('');
+    this.formularioComerciante!.controls['categoria'].setValue('');
   }
 
   eliminarCategoria(index: number): void {

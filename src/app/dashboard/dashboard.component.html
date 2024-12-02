@@ -2,44 +2,75 @@
   <!-- HEADER -->
   <!-- INICIO -->
   <div class="relative flex flex-col w-full h-[30%]">
-    <img src="https://smartbuilding.mx/website/wp-content/uploads/2017/12/mall-luminoso-9.jpg" alt=""
-      class="object-cover w-full h-full" />
-    <div class="absolute top-0 w-full h-[35%] bg-gradient-to-b from-black to-transparent opacity-70"></div>
-    <div class="absolute bottom-0 w-full h-[20%] bg-gradient-to-t from-black to-transparent opacity-70"></div>
-    <div class="px-[5%] absolute  w-full h-[35%] flex flex-row items-center ">
-      <section class="flex flex-row items-center gap-[1.2%] w-[70%] ">
-        <p class="text-white font-bold font-google-anta text-4xl mr-[1%]" style="text-shadow: 3px 3px black;">
+    <img
+      src="https://smartbuilding.mx/website/wp-content/uploads/2017/12/mall-luminoso-9.jpg"
+      alt=""
+      class="object-cover w-full h-full"
+    />
+    <div
+      class="absolute top-0 w-full h-[35%] bg-gradient-to-b from-black to-transparent opacity-70"
+    ></div>
+    <div
+      class="absolute bottom-0 w-full h-[20%] bg-gradient-to-t from-black to-transparent opacity-70"
+    ></div>
+    <div class="px-[5%] absolute w-full h-[35%] flex flex-row items-center">
+      <section class="flex flex-row items-center gap-[1.2%] w-[70%]">
+        <p
+          class="text-white font-bold font-google-anta text-4xl mr-[1%]"
+          style="text-shadow: 3px 3px black"
+        >
           KarsayMarkt.com
         </p>
-        @for(item of dashboardItems ; track dashboardItems;){
-        <div (click)="actualizacionTitulos(item.status)" [routerLink]="[item.route]"
+        @for(item of dashboardItems() ; track dashboardItems;){
+        <div
+          (click)="actualizacionTitulos(item.status)"
+          [routerLink]="[item.route]"
           routerLinkActive="border-4 bg-custom-primary bg-opacity-10"
-          class="cursor-pointer flex flex-row items-center justify-center gap-2 border-custom-primary  px-4  py-2 rounded-3xl">
-          <img src="{{item.imagen}}" alt="" class="h-9 w-9 object-cover">
-          <label routerLinkActive="text-custom-primary"
-            class=" cursor-pointer  text-white text-2xl font-google-anta">{{item.name}}</label>
+          class="cursor-pointer flex flex-row items-center justify-center gap-2 border-custom-primary px-4 py-2 rounded-3xl"
+        >
+          <img src="{{ item.imagen }}" alt="" class="h-9 w-9 object-cover" />
+          <label
+            routerLinkActive="text-custom-primary"
+            class="cursor-pointer text-white text-2xl font-google-anta"
+            >{{ item.name }}</label
+          >
         </div>
         }
       </section>
-      <section class="flex flex-row items-center justify-end gap-[4%] w-[30%] h-full">
-        <p class="text-white text-2xl font-google-anta" style="text-shadow: 2px 2px black;">
-          {{dataosAuth().email}}</p>
-        <img src="assets/perfilAuth.svg" alt="" class="h-9 w-9">
+      <section
+        class="flex flex-row items-center justify-end gap-[4%] w-[30%] h-full"
+      >
+        <p
+          class="text-white text-2xl font-google-anta"
+          style="text-shadow: 2px 2px black"
+        >
+          {{ dataosAuth().email }}
+        </p>
+        <img src="assets/perfilAuth.svg" alt="" class="h-9 w-9" />
         <button (click)="cerraSesion()">
-          <img src="assets/cerrar-sesion.svg" alt="" class="h-9 w-9">
+          <img src="assets/cerrar-sesion.svg" alt="" class="h-9 w-9" />
         </button>
       </section>
       <p></p>
     </div>
-    <h1 class="top-[35%] left-[5%] absolute text-5xl font-bold font-google-anta text-white"
-      style="text-shadow: 4px 4px black;">
-      {{titulo1}}</h1>
-    <p class="top-[55%] left-[5%] absolute font-google-anta text-3xl mt-2 text-white"
-      style="text-shadow: 3.5px 3.5px black;">{{titulo2}}
+    <h1
+      class="top-[35%] left-[5%] absolute text-5xl font-bold font-google-anta text-white"
+      style="text-shadow: 4px 4px black"
+    >
+      {{ titulo1() }}
+    </h1>
+    <p
+      class="top-[55%] left-[5%] absolute font-google-anta text-3xl mt-2 text-white"
+      style="text-shadow: 3.5px 3.5px black"
+    >
+      {{ titulo2() }}
     </p>
-    <p class="top-[70%] left-[5%] absolute font-google-anta text-3xl mt-2 text-white"
-      style="text-shadow: 3.5px 3.5px black;">
-      {{titulo3}}</p>
+    <p
+      class="top-[70%] left-[5%] absolute font-google-anta text-3xl mt-2 text-white"
+      style="text-shadow: 3.5px 3.5px black"
+    >
+      {{ titulo3() }}
+    </p>
   </div>
   <!-- FIN -->
   <div class="w-full h-[100%] px-[5%]">

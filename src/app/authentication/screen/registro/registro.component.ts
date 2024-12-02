@@ -8,6 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { ModalService } from '../../../shared/components/modal/modal.service';
 import { AuthenticationService, AuthUser } from '../../authentication.service';
 
 @Component({
@@ -15,50 +16,80 @@ import { AuthenticationService, AuthUser } from '../../authentication.service';
   standalone: true,
   imports: [RouterModule, CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './registro.component.html',
-  styleUrl: './registro.component.css',
 })
 export default class RegistroComponent {
   public formBuilder = inject(FormBuilder);
   public router = inject(Router);
   public authenticationService = inject(AuthenticationService);
+  public modalService = inject(ModalService);
 
   public estatus: string[] = ['Comerciante', 'Supervisor'];
 
-  // NOTE: FORMULARIO DE INICIO SESION
   public formularioRegistro: FormGroup = this.formBuilder.group({
-    email: ['', [Validators.required]],
-    password1: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    password1: ['', [Validators.required, Validators.minLength(6)]],
     password2: ['', [Validators.required]],
     estatus: ['', [Validators.required]],
-    codigo: ['', [Validators.required]],
+    codigo: ['', [Validators.required, Validators.minLength(4)]],
   });
 
   viewColaborador(value: string): void {
-    this.formularioRegistro.get('estatus')!.setValue(value);
+    this.formularioRegistro.get('estatus')?.setValue(value);
   }
 
   procesarFormulario(): void {
-    const { email, password1, password2, estatus } =
-      this.formularioRegistro.value;
-    if (password1 !== password2) {
-      alert('Las contraseñas no coinciden');
+    if (this.formularioRegistro.invalid) {
+      this.modalService.showError(
+        'Por favor, complete todos los campos correctamente'
+      );
       return;
     }
+
+    const { email, password1, password2, estatus, codigo } =
+      this.formularioRegistro.value;
+
+    if (password1 !== password2) {
+      this.modalService.showError('Las contraseñas no coinciden');
+      return;
+    }
+
     this.authenticationService
-      .procesarRegistro(email, password1, estatus)
-      .subscribe(
-        (responseAuthUser: AuthUser) => {
-          // console.log(responseAuthUser);
-          if (responseAuthUser.role == 'Supervisor') {
-            this.authenticationService.procesoCrearUnCentroComercial(
-              responseAuthUser.id
+      .procesarRegistro(email, password1, estatus, codigo)
+      .subscribe({
+        next: (responseAuthUser: AuthUser) => {
+          if (responseAuthUser.role.toLowerCase() === 'supervisor') {
+            this.authenticationService
+              .procesoCrearUnCentroComercial(responseAuthUser.id)
+              .subscribe({
+                next: () => {
+                  setTimeout(() => {
+                    this.modalService.showSuccess(
+                      '¡Registro exitoso! Por favor, inicie sesión con sus credenciales'
+                    );
+                    setTimeout(() => {
+                      this.router.navigate(['/auth/login']);
+                    }, 2000);
+                  }, 1000);
+                },
+                error: (error) => {
+                  this.modalService.showError(
+                    'Error al crear el centro comercial'
+                  );
+                },
+              });
+          } else {
+            this.modalService.showSuccess(
+              '¡Registro exitoso! Por favor, inicie sesión con sus credenciales'
             );
+            setTimeout(() => {
+              this.router.navigate(['/auth/login']);
+            }, 2000);
           }
-          // this.router.navigate(['/auth/login']);
         },
-        (error: any) => {
-          // console.log(error);
-        }
-      );
+        error: (error) => {
+          this.modalService.showError('Error en el registro: ' + error);
+          console.error('Error en registro:', error);
+        },
+      });
   }
 }

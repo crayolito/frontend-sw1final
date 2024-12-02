@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { filter } from 'rxjs';
 import {
   AuthenticationService,
   AuthUser,
@@ -27,13 +28,21 @@ export default class DashboardComponent implements OnInit {
   public authenticationService = inject(AuthenticationService);
   public authCentroComercial = inject(AuthenticationService);
   public router = inject(Router);
-  public titulo1: string = '';
-  public titulo2: string = '';
-  public titulo3: string = '';
 
-  public dashboardItems: MenuItem[] = [];
+  public titulo1 = signal<string>('');
+  public titulo2 = signal<string>('');
+  public titulo3 = signal<string>('');
+  public dashboardItems = signal<MenuItem[]>([]);
+  private routeStatusMap: Record<string, DashboardStatus> = {
+    '/dashboard/perfil-supervisor': DashboardStatus.perfilSupervisor,
+    '/dashboard/perfil-comerciante': DashboardStatus.perfilComerciante,
+    '/dashboard/georeferenciacion': DashboardStatus.geolocalizacion,
+    '/dashboard/lista-comerciantes': DashboardStatus.comerciantes,
+    '/dashboard/lista-productos': DashboardStatus.productos,
+    '/dashboard/producto': DashboardStatus.productos,
+  };
 
-  public dashboardItemsSupervisor: MenuItem[] = [
+  public readonly dashboardItemsSupervisor: MenuItem[] = [
     {
       name: 'Perfil',
       route: '/dashboard/perfil-supervisor',
@@ -60,7 +69,7 @@ export default class DashboardComponent implements OnInit {
     },
   ];
 
-  public dashboardItemsComerciante: MenuItem[] = [
+  public readonly dashboardItemsComerciante: MenuItem[] = [
     {
       name: 'Perfil',
       route: '/dashboard/perfil-comerciante',
@@ -75,107 +84,117 @@ export default class DashboardComponent implements OnInit {
     },
   ];
 
-  dataosAuth(): AuthUser {
+  constructor() {
+    this.router.events
+      .pipe(
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd
+        )
+      )
+      .subscribe({
+        next: () => {
+          this.inicializarDashboard();
+        },
+      });
+  }
+
+  public dataosAuth(): AuthUser {
     return this.authCentroComercial.userAuth();
   }
 
   ngOnInit(): void {
-    // this.inicializarDashboard();
+    this.inicializarDashboard();
   }
 
-  // inicializarDashboard(): void {
-  //   switch (this.router.url) {
-  //     case '/dashboard/perfil-supervisor':
-  //       this.actualizacionTitulos(DashboardStatus.perfilSupervisor);
-  //       break;
-  //     case '/dashboard/perfil-comerciante':
-  //       this.actualizacionTitulos(DashboardStatus.perfilComerciante);
-  //       break;
-  //     case '/dashboard/georeferenciacion':
-  //       this.actualizacionTitulos(DashboardStatus.geolocalizacion);
-  //       break;
-  //     case '/dashboard/lista-comerciantes':
-  //       this.actualizacionTitulos(DashboardStatus.comerciantes);
-  //       break;
-  //     case '/dashboard/lista-productos':
-  //     case '/dashboard/producto':
-  //       this.actualizacionTitulos(DashboardStatus.productos);
-  //       break;
-  //   }
-  //   if (
-  //     this.authenticationService.statusAuthenticated() ==
-  //     StatusAuthenticated.supervisor
-  //   ) {
-  //     this.dashboardItems = this.dashboardItemsSupervisor;
-  //   } else {
-  //     this.dashboardItems = this.dashboardItemsComerciante;
-  //   }
-  // }
+  public inicializarDashboard(): void {
+    const currentStatus = this.routeStatusMap[this.router.url];
+    if (currentStatus) {
+      this.actualizacionTitulos(currentStatus);
+    }
 
-  actualizacionTitulos(status: DashboardStatus): void {
+    const isSupervisor =
+      this.authenticationService.statusAuthenticated() ===
+      StatusAuthenticated.supervisor;
+
+    this.dashboardItems.set(
+      isSupervisor
+        ? this.dashboardItemsSupervisor
+        : this.dashboardItemsComerciante
+    );
+  }
+
+  public actualizacionTitulos(status: DashboardStatus): void {
     if (
-      this.authenticationService.statusAuthenticated() ==
+      this.authenticationService.statusAuthenticated() ===
       StatusAuthenticated.supervisor
     ) {
       switch (status) {
         case DashboardStatus.perfilSupervisor:
-          this.titulo1 = 'Perfil del Centro Comercial';
-          this.titulo2 = 'Configuración y Detalles del Centro Comercial';
-          this.titulo3 = 'Disfruta de una Gestión Eficiente y Personalizada';
+          this.titulo1.set('Perfil del Centro Comercial');
+          this.titulo2.set('Configuración y Detalles del Centro Comercial');
+          this.titulo3.set('Disfruta de una Gestión Eficiente y Personalizada');
           break;
         case DashboardStatus.geolocalizacion:
-          this.titulo1 = 'Mapa de Ubicaciones';
-          this.titulo2 =
-            'Supervisión y Optimización de Distribución de Comerciantes y Productos';
-          this.titulo3 = 'Navega y Encuentra Rápidamente lo que Necesitas';
+          this.titulo1.set('Mapa de Ubicaciones');
+          this.titulo2.set(
+            'Supervisión y Optimización de Distribución de Comerciantes y Productos'
+          );
+          this.titulo3.set('Navega y Encuentra Rápidamente lo que Necesitas');
           break;
         case DashboardStatus.comerciantes:
-          this.titulo1 = 'Directorio de Comerciantes';
-          this.titulo2 =
-            'Administración y Actualización de Información de Comerciantes';
-          this.titulo3 =
-            'Conecta con los Mejores Comerciantes del Centro Comercial';
+          this.titulo1.set('Directorio de Comerciantes');
+          this.titulo2.set(
+            'Administración y Actualización de Información de Comerciantes'
+          );
+          this.titulo3.set(
+            'Conecta con los Mejores Comerciantes del Centro Comercial'
+          );
           break;
         case DashboardStatus.productos:
-          this.titulo1 = 'Catálogo de Productos';
-          this.titulo2 =
-            'Gestión y Control de la Diversidad de Productos Disponibles';
-          this.titulo3 = 'Explora y Descubre Nuevas Opciones de Compra';
+          this.titulo1.set('Catálogo de Productos');
+          this.titulo2.set(
+            'Gestión y Control de la Diversidad de Productos Disponibles'
+          );
+          this.titulo3.set('Explora y Descubre Nuevas Opciones de Compra');
           break;
         case DashboardStatus.politicas:
-          this.titulo1 = 'Políticas de la Empresa';
-          this.titulo2 = 'Misión, Visión y Normas de Seguridad';
-          this.titulo3 = 'Construye un Entorno Seguro y Confiable para Todos';
+          this.titulo1.set('Políticas de la Empresa');
+          this.titulo2.set('Misión, Visión y Normas de Seguridad');
+          this.titulo3.set(
+            'Construye un Entorno Seguro y Confiable para Todos'
+          );
           break;
       }
     }
 
     if (
-      this.authenticationService.statusAuthenticated() ==
+      this.authenticationService.statusAuthenticated() ===
       StatusAuthenticated.comerciante
     ) {
       switch (status) {
         case DashboardStatus.perfilComerciante:
-          this.titulo1 = 'Mi Perfil Comercial';
-          this.titulo2 = 'Gestiona tu Información y Configuración';
-          this.titulo3 = 'Personaliza tu Presencia en el Centro Comercial';
+          this.titulo1.set('Mi Perfil Comercial');
+          this.titulo2.set('Gestiona tu Información y Configuración');
+          this.titulo3.set('Personaliza tu Presencia en el Centro Comercial');
           break;
         case DashboardStatus.productos:
-          this.titulo1 = 'Catálogo de Mis Productos';
-          this.titulo2 = 'Administra y Promociona tus Productos';
-          this.titulo3 = 'Destaca tus Productos en el Centro Comercial';
+          this.titulo1.set('Catálogo de Mis Productos');
+          this.titulo2.set('Administra y Promociona tus Productos');
+          this.titulo3.set('Destaca tus Productos en el Centro Comercial');
           break;
         case DashboardStatus.politicas:
-          this.titulo1 = 'Normativas y Valores de la Empresa';
-          this.titulo2 = 'Conoce las Reglas y Cultura de la Empresa';
-          this.titulo3 = 'Alinea tu Negocio con los Principios de la Empresa';
+          this.titulo1.set('Normativas y Valores de la Empresa');
+          this.titulo2.set('Conoce las Reglas y Cultura de la Empresa');
+          this.titulo3.set(
+            'Alinea tu Negocio con los Principios de la Empresa'
+          );
           break;
       }
     }
     this.dashboardService.dashboardStatus.set(status);
   }
 
-  cerraSesion(): void {
+  public cerraSesion(): void {
     this.authenticationService.cerrarSesion();
   }
 }

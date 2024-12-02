@@ -1,5 +1,42 @@
-<div class="bg-slate-50 w-screen h-screen flex flex-col items-center justify-center">
-  <button (click)="ejecutarCancelacionPago()"
-    class="rounded-xl px-2 py-3 shadow-custom-shadow border-4 bg-custom-primary font-google-anta font-bold text-white text-2xl hover:bg-green-600">Confirme<br>Cancelacion
-    Pago</button>
+<div
+  class="relative w-screen h-screen overflow-hidden bg-gradient-to-br from-custom-primary via-white to-custom-secondary"
+>
+  <!-- Fondo con animación de gradiente -->
+  <div
+    class="absolute inset-0 bg-gradient-to-r from-custom-primary via-custom-secondary to-custom-primary animate-gradient-x"
+  ></div>
+
+  <!-- Contenido principal centrado -->
+  <div class="relative z-10 flex items-center justify-center h-full">
+    <div
+      class="bg-white bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-3xl shadow-custom-shadow p-8 mx-4 max-w-md text-center"
+    >
+      <h1
+        class="text-4xl font-google-anta font-bold text-custom-secondary mb-6 shadow-text"
+      >
+        Espero que su cancelación haya sido exitosa
+      </h1>
+      <!-- (click)="volverAlInicio()" -->
+      <button
+        class="mt-4 w-full flex items-center justify-center space-x-3 py-4 px-6 bg-custom-primary text-white font-google-anta font-semibold text-xl rounded-full shadow-md hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 transition duration-300 transform hover:-translate-y-1 hover:scale-105"
+      >
+        <!-- Icono personalizado -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 10h12M9 16l-6-6 6-6"
+          />
+        </svg>
+        <span>Volver al Inicio</span>
+      </button>
+    </div>
+  </div>
 </div>

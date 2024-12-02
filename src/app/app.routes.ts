@@ -129,7 +129,7 @@ export const routes: Routes = [
     loadComponent: () => import('./payment/payment.component'),
   },
   {
-    path: 'payment-success',
+    path: 'payment-success/:id',
     loadComponent: () => import('./payment/screens/success/success.component'),
   },
   {
