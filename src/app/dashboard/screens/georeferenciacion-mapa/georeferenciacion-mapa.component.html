@@ -1,30 +1,36 @@
 <div class="w-screen h-screen flex items-center justify-center">
-  <div id="map" #map class=" h-[100vh] w-[100vw] bg-blue-950">
-  </div>
+  <div id="map" #map class="h-[100vh] w-[100vw] bg-blue-950"></div>
 
   <!-- OPTIONS GEOLOCATOR -->
   <!-- INICIO -->
-  <button [ngClass]="{'hidden': verMapa()}" (click)="agregarMarcadorTrabajo()"
-    class=" fixed top-[69%] left-[96.8%] rounded-xl bg-white p-[0.3%] shadow-customMap-shadow">
-    <img src="assets/addMarcador.svg" alt="" class="h-8 w-8">
+  <button
+    [ngClass]="{ hidden: verMapa() }"
+    (click)="agregarMarcadorTrabajo()"
+    class="fixed top-[69%] left-[96.8%] rounded-xl bg-white p-[0.3%] shadow-customMap-shadow"
+  >
+    <img src="assets/addMarcador.svg" alt="" class="h-8 w-8" />
   </button>
-  <button (click)="cambiarEstadoMapa()"
-    class=" fixed top-[75%] left-[96.8%] rounded-xl bg-white p-[0.3%] shadow-customMap-shadow">
-    <img [src]="iconWorkStatusMap()" alt="" class="h-8 w-8">
+  <button
+    (click)="cambiarEstadoMapa()"
+    class="fixed top-[75%] left-[96.8%] rounded-xl bg-white p-[0.3%] shadow-customMap-shadow"
+  >
+    <img [src]="iconWorkStatusMap()" alt="" class="h-8 w-8" />
   </button>
-  <button (click)="flyToMyLocation()"
-    class=" fixed top-[81%] left-[96.8%] rounded-xl bg-white p-[0.3%] shadow-customMap-shadow">
-    <img src="assets/myLocationMapa.svg" alt="" class="h-8 w-8">
+  <button
+    (click)="flyToMyLocation()"
+    class="fixed top-[81%] left-[96.8%] rounded-xl bg-white p-[0.3%] shadow-customMap-shadow"
+  >
+    <img src="assets/myLocationMapa.svg" alt="" class="h-8 w-8" />
   </button>
   <div
-    class="fixed top-[86.8%] left-[96.8%] rounded-xl bg-white p-[0.3%] shadow-customMap-shadow flex flex-col space-y-2">
+    class="fixed top-[86.8%] left-[96.8%] rounded-xl bg-white p-[0.3%] shadow-customMap-shadow flex flex-col space-y-2"
+  >
     <button (click)="zoomIn()">
-      <img src="assets/zoomMasMapa.svg" alt="" class="h-8 w-8">
+      <img src="assets/zoomMasMapa.svg" alt="" class="h-8 w-8" />
     </button>
-    <div class="bg-slate-500 h-[2px]">
-    </div>
+    <div class="bg-slate-500 h-[2px]"></div>
     <button (click)="zoomOut()">
-      <img src="assets/zoomMenosMapa.svg" alt="" class="h-8 w-8">
+      <img src="assets/zoomMenosMapa.svg" alt="" class="h-8 w-8" />
     </button>
   </div>
   <button></button>
@@ -32,53 +38,113 @@
 
   <!-- OPCIONES PARA TOPOGRAFIA -->
   <!-- INICIO -->
-  <div [ngClass]="{'hidden': verMapa()}" class="fixed top-[2%] left-[0.8%] w-[40%] h-[7%] flex flex-row gap-[2%] ">
-    <button (click)="cambioEstadoTrabajo()" [ngClass]="{'border-4 border-custom-primary': estadoTrabajoEntrada()}"
-      class="w-[23%] h-[90%] shadow-customMap-shadow p-3 bg-white flex flex-row rounded-xl gap-[5%] items-center justify-center">
-      <img src="assets/entradaComercial.svg" alt="" class="h-8 w-8">
-      <p [ngStyle]="estadoTrabajoEntrada() ? {'text-shadow': '3px 3px #31bb11'} : {}"
-        class="text-black font-bold font-google-anta text-2xl">Entradas</p>
+  <div
+    [ngClass]="{ hidden: verMapa() }"
+    class="fixed top-[2%] left-[0.8%] w-[40%] h-[7%] flex flex-row gap-[2%]"
+  >
+    <button
+      (click)="cambioEstadoTrabajo()"
+      [ngClass]="{ 'border-4 border-custom-primary': estadoTrabajoEntrada() }"
+      class="w-[23%] h-[90%] shadow-customMap-shadow p-3 bg-white flex flex-row rounded-xl gap-[5%] items-center justify-center"
+    >
+      <img src="assets/entradaComercial.svg" alt="" class="h-8 w-8" />
+      <p
+        [ngStyle]="
+          estadoTrabajoEntrada() ? { 'text-shadow': '3px 3px #31bb11' } : {}
+        "
+        class="text-black font-bold font-google-anta text-2xl"
+      >
+        Entradas
+      </p>
     </button>
-    <button (click)="cambioEstadoTrabajo()" [ngClass]="{'border-4 border-custom-primary': estadoTrabajoTopografia()}"
-      class="w-[23%] h-[90%] shadow-customMap-shadow p-3 bg-white flex flex-row rounded-xl gap-[5%] items-center justify-center">
-      <img src="assets/architectureMapa.svg" alt="" class="h-8 w-8">
-      <p [ngStyle]="estadoTrabajoTopografia() ? {'text-shadow': '3px 3px #31bb11'} : {}"
-        class="text-black font-bold font-google-anta text-2xl">Topografia</p>
+    <button
+      (click)="cambioEstadoTrabajo()"
+      [ngClass]="{
+        'border-4 border-custom-primary': estadoTrabajoTopografia()
+      }"
+      class="w-[23%] h-[90%] shadow-customMap-shadow p-3 bg-white flex flex-row rounded-xl gap-[5%] items-center justify-center"
+    >
+      <img src="assets/architectureMapa.svg" alt="" class="h-8 w-8" />
+      <p
+        [ngStyle]="
+          estadoTrabajoTopografia() ? { 'text-shadow': '3px 3px #31bb11' } : {}
+        "
+        class="text-black font-bold font-google-anta text-2xl"
+      >
+        Topografia
+      </p>
     </button>
-    <div [ngClass]="{'hidden': !viewInputDataCoords()}"
-      class="w-[50%] h-[90%] shadow-customMap-shadow bg-white flex flex-row rounded-xl gap-[5%] items-center justify-between px-[1.5%]">
-      <input type="text" [(ngModel)]="valorInputCoordenadas"
+    <div
+      [ngClass]="{ hidden: !viewInputDataCoords() }"
+      class="w-[50%] h-[90%] shadow-customMap-shadow bg-white flex flex-row rounded-xl gap-[5%] items-center justify-between px-[1.5%]"
+    >
+      <input
+        type="text"
+        [(ngModel)]="valorInputCoordenadas"
         class="h-full font-bold font-google-anta text-xl min-w-max flex-grow border-none focus:outline-none"
-        placeholder="Longitud , Latitud">
-      <button (click)="agregarMedianteInputCoords()"
-        class="text-4xl font-bold font-google-anta border-4 rounded-md px-[2%]">+</button>
+        placeholder="Longitud , Latitud"
+      />
+      <button
+        (click)="agregarMedianteInputCoords()"
+        class="text-4xl font-bold font-google-anta border-4 rounded-md px-[2%]"
+      >
+        +
+      </button>
     </div>
   </div>
   <!-- FIN -->
 
   <!-- CONTENEDOR OBJETOS GEOGRAFICOS -->
   <!-- INICIO -->
-  <div [ngClass]="{'hidden': verMapa()}"
-    class=" fixed top-[2%] left-[78.8%] p-[0.5%] w-[20%] h-[32%] rounded-2xl border-2 bg-white shadow-customMap-shadow flex flex-col gap-[2%] ">
+  <div
+    [ngClass]="{ hidden: verMapa() }"
+    class="fixed top-[2%] left-[78.8%] p-[0.5%] w-[20%] h-[32%] rounded-2xl border-2 bg-white shadow-customMap-shadow flex flex-col gap-[2%]"
+  >
     <div class="flex flex-row justify-between">
-      <p class="text-black font-bold font-google-anta text-2xl">Elementos Geograficos</p>
+      <p class="text-black font-bold font-google-anta text-2xl">
+        Elementos Geograficos
+      </p>
       <button (click)="actualizarEstadoInputCoords()">
-        <img src="assets/coordenadasMapa.svg" alt=""
-          [ngClass]="viewInputDataCoords() ? 'border-4 border-custom-primary rounded-2xl' :''">
+        <img
+          src="assets/coordenadasMapa.svg"
+          alt=""
+          [ngClass]="
+            viewInputDataCoords()
+              ? 'border-4 border-custom-primary rounded-2xl'
+              : ''
+          "
+        />
       </button>
     </div>
     <div class="h-[1.2%] bg-slate-200 w-full"></div>
-    <div class="h-[25vh] w-[100%] mt-[2.5%] overflow-auto flex flex-col gap-[6%]">
+    <div
+      class="h-[25vh] w-[100%] mt-[2.5%] overflow-auto flex flex-col gap-[6%]"
+    >
       @for(marcador of viewDataClient; track viewDataClient ; let id= $index){
-      <div class="flex flex-row gap-[1%] items-center flex-shrink-0 ">
-        <img src="assets/iconoMarcadorDataCliente.svg" alt="Descripción de la imagen" class="h-9 w-9 cursor-pointer"
-          (click)="flyToMarker(id)">
-        <p class="text-2xl text-black font-google-anta">{{estadoTrabajoEntrada() ? 'Entrada' : 'Coordenada'}} {{id}}</p>
-        <img src="assets/delete.svg" alt="" class="h-8 w-8 cursor-pointer" (click)="eliminarMarcador(id)">
+      <div class="flex flex-row gap-[1%] items-center flex-shrink-0">
+        <img
+          src="assets/iconoMarcadorDataCliente.svg"
+          alt="Descripción de la imagen"
+          class="h-9 w-9 cursor-pointer"
+          (click)="flyToMarker(id)"
+        />
+        <p class="text-2xl text-black font-google-anta">
+          {{ estadoTrabajoEntrada() ? "Entrada" : "Coordenada" }} {{ id }}
+        </p>
+        <img
+          src="assets/delete.svg"
+          alt=""
+          class="h-8 w-8 cursor-pointer"
+          (click)="eliminarMarcador(id)"
+        />
       </div>
       }@empty {
-      <div class="flex flex-row gap-[1%] items-center h-[100%] w-full ">
-        <img src="assets/vacioPoligonos.gif" alt="" class="h-full w-full object-contain">
+      <div class="flex flex-row gap-[1%] items-center h-[100%] w-full">
+        <img
+          src="assets/vacioPoligonos.gif"
+          alt=""
+          class="h-full w-full object-contain"
+        />
       </div>
       }
     </div>
@@ -87,9 +153,12 @@
 
   <!-- BUTTON PARA GUARDAR DATOS  -->
   <!-- INICIO -->
-  <button [ngClass]="{'hidden': verMapa()}" (click)="guardarDatosModificados()"
-    class="top-[88%] left-[1%] fixed bg-white shadow-customMap-shadow rounded-md p-[0.7%]">
-    <img [src]="imagenGuardarDatos" alt="" class="h-12 w-12">
+  <button
+    [ngClass]="{ hidden: verMapa() }"
+    (click)="guardarDatosModificados()"
+    class="top-[88%] left-[1%] fixed bg-white shadow-customMap-shadow rounded-md p-[0.7%]"
+  >
+    <img [src]="imagenGuardarDatos" alt="" class="h-12 w-12" />
   </button>
   <!-- FIN -->
 </div>

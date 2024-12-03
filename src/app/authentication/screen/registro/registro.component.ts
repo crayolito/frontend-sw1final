@@ -57,7 +57,7 @@ export default class RegistroComponent {
       .procesarRegistro(email, password1, estatus, codigo)
       .subscribe({
         next: (responseAuthUser: AuthUser) => {
-          if (responseAuthUser.role.toLowerCase() === 'supervisor') {
+          if (responseAuthUser.role.toLowerCase() == 'supervisor') {
             this.authenticationService
               .procesoCrearUnCentroComercial(responseAuthUser.id)
               .subscribe({

@@ -1,17 +1,3 @@
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { authCentroComercial } from '../data';
-import { PerfilService } from '../perfil.service';
-
 export interface ICentroComercial {
   id: string;
   imagen: string;
@@ -28,6 +14,25 @@ export interface ICentroComercial {
   codigoComerciante: string;
   codigoSupervidor: string;
 }
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  inject,
+  Inject,
+  OnInit,
+  PLATFORM_ID,
+  signal,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { AuthenticationService } from '../../../../authentication/authentication.service';
+import { PerfilService } from '../perfil.service';
 
 @Component({
   selector: 'app-supervisor',
@@ -36,18 +41,16 @@ export interface ICentroComercial {
   templateUrl: './supervisor.component.html',
   styleUrl: './supervisor.component.css',
 })
-export default class SupervisorComponent {
-  public perfilService = inject(PerfilService);
-  public http = inject(HttpClient);
-  public formBuilder = inject(FormBuilder);
-  // READ : ESTADO DE IMAGEN Y URL DE IMAGEN
+export default class SupervisorComponent implements OnInit {
+  private perfilService = inject(PerfilService);
+  private formBuilder = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthenticationService);
+  private isBrowser: boolean;
+
   public imageEmpresa = signal<string>('assets/subirImagen.png');
   public estadoImagen = signal<boolean>(false);
-  // READ : VECTOR DE TIPOS DE HABITACIONES
-  public tiposHabitacion: string[] = [];
-  // READ : ESTADO BUTTON SUBMIT
   public textButtonForm = signal<string>('Editar');
-  public router = inject(Router);
 
   public formularioSupervisor: FormGroup = this.formBuilder.group({
     nombreComercial: ['', [Validators.required]],
@@ -64,47 +67,70 @@ export default class SupervisorComponent {
     codigoComerciante: ['', [Validators.required]],
   });
 
-  ngOnInit(): void {
-    var usuario = localStorage.getItem('usuarioLogin');
-    if (usuario != null) {
-      this.estadoImagen.set(true);
-      this.imageEmpresa.set(authCentroComercial.imagen);
+  constructor(@Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
-      this.perfilService.supervidorComercial.set(authCentroComercial);
-      this.formularioSupervisor.setValue({
-        nombreComercial: authCentroComercial.nombreComercial,
-        nombreDueño: authCentroComercial.nombreDueño,
-        horarioAtencion: authCentroComercial.horarioAtencion,
-        numeroAtencion: authCentroComercial.numeroAtencion,
-        coordenadaLongitud: authCentroComercial.coordenadaLongitud,
-        coordenadaLatitud: authCentroComercial.coordenadaLatitud,
-        ubicacionDescriptiva: authCentroComercial.ubicacionDescriptiva,
-        urlGoogleMaps: authCentroComercial.urlGoogleMaps,
-        urlFormQuejas: authCentroComercial.urlFormQuejas,
-        urlWeb: authCentroComercial.urlWeb,
-        codigoComerciante: authCentroComercial.codigoComerciante,
-        codigoSupervidor: authCentroComercial.codigoSupervidor,
-      });
-    } else {
-      // this.router.navigate(['/auth/login']);
+  ngOnInit(): void {
+    if (this.isBrowser) {
+      const authUser = this.authService.userAuth();
+      if (authUser && authUser.centroComercial) {
+        this.initializeSupervisor(authUser.centroComercial);
+      } else {
+        this.router.navigate(['/auth/login']);
+      }
     }
   }
 
-  // NOTE : SELECCIONAR IMAGEN
-  seleccionarImagen(event: any) {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
+  private initializeSupervisor(centroComercial: any): void {
+    this.estadoImagen.set(true);
+    this.imageEmpresa.set(centroComercial.imagen);
+    this.perfilService.supervidorComercial.set(centroComercial);
+
+    this.formularioSupervisor.patchValue({
+      nombreComercial: centroComercial.nombreComercial,
+      nombreDueño: centroComercial.nombreDueño,
+      horarioAtencion: centroComercial.horarioAtencion,
+      numeroAtencion: centroComercial.numeroAtencion,
+      coordenadaLongitud: centroComercial.coordenadaLongitud,
+      coordenadaLatitud: centroComercial.coordenadaLatitud,
+      ubicacionDescriptiva: centroComercial.ubicacionDescriptiva,
+      urlGoogleMaps: centroComercial.urlGoogleMaps,
+      urlFormQuejas: centroComercial.urlFormQuejas,
+      urlWeb: centroComercial.urlWeb,
+      codigoComerciante: centroComercial.codigoComerciante,
+      codigoSupervidor: centroComercial.codigoSupervidor,
+    });
+  }
+
+  public seleccionarImagen(event: any): void {
+    const file = event.target.files?.[0];
+    if (file) {
       this.perfilService.uploadToCloudinary(file).subscribe({
         next: (response: any) => {
           this.imageEmpresa.set(response.secure_url);
           this.estadoImagen.set(true);
         },
-        error: (e: any) => {
-          console.log(e);
+        error: (error: any) => {
+          console.error('Error al subir imagen:', error);
         },
       });
     }
   }
 
-  procesarFormularioSupervidor(): void {}
+  public procesarFormularioSupervidor(): void {
+    if (this.formularioSupervisor.valid) {
+      const formData = this.formularioSupervisor.value;
+      const centroComercialActualizado = {
+        ...this.authService.userAuth().centroComercial,
+        ...formData,
+        imagen: this.imageEmpresa(),
+      };
+
+      // Aquí podrías implementar la lógica para actualizar el centro comercial
+      // en tu AuthenticationService o en un servicio dedicado para ello
+      this.perfilService.supervidorComercial.set(centroComercialActualizado);
+      this.textButtonForm.set('Guardado');
+    }
+  }
 }

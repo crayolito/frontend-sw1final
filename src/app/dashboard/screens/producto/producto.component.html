@@ -1,87 +1,212 @@
-<div class="h-full w-full ">
-  <form method="post" action="" class=" w-full h-[145%] mt-[2.5%] pb-[1%] flex flex-col items-center" autocomplete="off"
-    [formGroup]="formProducto" (ngSubmit)="procesarFormulario()">
-    <!-- PARTE 1 -->
-    <!-- INICIO -->
-    <div class="flex flex-row w-[80%] h-[33%] gap-[2%] items-center justify-center">
-
-      <label for="fileUpload"
-        class=" w-[540px] h-[430px] flex flex-col justify-center items-center text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue hover:text-white">
-        <img id="imagePreview" [src]="imagenProducto()" alt=""
-          [class]="estadoImagen() ? 'w-full h-full object-contain' : 'w-[200px] h-[200px] object-contain'" />
-        <input id="fileUpload" type='file' class="hidden" (change)="seleccionarImagen($event)" />
-      </label>
-
-      <div class="w-[40%] h-[95%] pl-[2%] ">
-        <!-- TITULO Producto -->
-        <div class="w-full h-[30%]  flex flex-col justify-between">
-          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Titulo Producto</p>
-          <input type="text" placeholder="Titulo" formControlName="titulo"
-            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
-        </div>
-        <!-- PRECIO Producto -->
-        <div class="w-full h-[30%]  flex flex-col justify-between">
-          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Precio BOB</p>
-          <input type="number" placeholder="Precio Producto" oninput="validity.valid||(value='1');"
-            formControlName="precio"
-            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
-        </div>
-        <!-- Descuento Producto -->
-        <div class="w-full h-[30%]  flex flex-col justify-between">
-          <p class=" font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Descuento</p>
-          <input type="number" placeholder="Descuento" oninput="validity.valid||(value='1');"
-            formControlName="descuento"
-            class="rounded-md w-full h-[60%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4">
-        </div>
-      </div>
-    </div>
-    <!-- FIN -->
-
-    <!-- PARTE 2 -->
-    <!-- INICIO -->
-    <div class="flex flex-row w-[80%] h-[20%]  gap-[2%] items-center justify-center ">
-      <!-- DESCRIPCION OFERTA -->
-      <div class="w-[40%] h-[95%]  rounded-2xl border-2 border-gray-400 px-[2%] py-[1%]">
-        <p class="mb-[3%] font-google-anta text-2xl pt-2" style="text-shadow: 1px 1px #31bb11;">Descripcion del Producto
-        </p>
-        <textarea cols="30" rows="2" placeholder="Describa el producto que pondra a la vista"
-          formControlName="descripcion"
-          class=" w-full h-[70%] font-google-anta text-2xl pl-4 border-2 border-gray-400 focus:outline-none focus:border-custom-primary focus:border-4 rounded-md"
-          style="resize: none;"></textarea>
-      </div>
-      <div class="flex flex-col gap-[3%] w-[38.5%] h-[95%]  items-center justify-center ">
-        <div class="relative w-[40%] h-[35%] flex flex-row items-center gap-[2%]">
-          <input type="checkbox" id="opcionOffer2" class="peer/opcionOffer2 hidden">
-          <label for="opcionOffer2"
-            class="bg-open-windown h-10 w-10 bg-cover bg-center cursor-pointer peer-checked/opcionOffer2:bg-close-windown transition-all"></label>
-          <input type="text" placeholder="Estado" [value]="valueSelectEstado"
-            class="rounded-md w-full h-[90%] text-2xl pl-4 outline-none border-custom-primary border-4 font-google-anta"
-            disabled>
+<div class="h-full w-full py-8">
+  <form
+    [formGroup]="formProducto"
+    (ngSubmit)="procesarFormulario()"
+    class="w-full max-w-6xl mx-auto space-y-8"
+  >
+    <!-- Sección Superior: Imagen y Detalles Básicos -->
+    <div class="grid grid-cols-2 gap-8">
+      <!-- Selector de Imagen -->
+      <div class="space-y-4">
+        <h3 class="font-google-anta text-2xl text-custom-primary">
+          Imagen del Producto
+        </h3>
+        <label for="fileUpload" class="relative group cursor-pointer block">
           <div
-            class="peer-checked/opcionOffer2:visible invisible flex flex-col  absolute  bottom-[100%] left-[14%]  w-[200px] bg-slate-50 rounded-xl shadow-custom-shadow z-10">
-            @for (estado of difEstadoProducto; track difEstadoProducto; let last = $last) {
-            <div [class]="{'rounded-b-xl' : last}" (click)="updateSelectEstado(estado)"
-              class="items-center justify-center flex flex-row gap-4  w-[100%] h-[70px]   border-b-2  border-b-gray-400 border-opacity-50 hover:bg-gray-400 hover:bg-opacity-50">
-              <div class="flex flex-col">
-                <p class="text-2xl font-bold font-google-anta ">{{estado}}</p>
-              </div>
+            class="aspect-square rounded-xl border-2 border-dashed border-gray-300 overflow-hidden hover:border-custom-primary transition-colors"
+          >
+            <img
+              [src]="imagenProducto()"
+              [alt]="formProducto.get('nombre')?.value || 'Nuevo Producto'"
+              [class]="
+                estadoImagen()
+                  ? 'w-full h-full object-cover'
+                  : 'w-1/2 h-1/2 object-contain m-auto opacity-50'
+              "
+            />
+            <div
+              class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <span class="text-white font-google-anta">Cambiar Imagen</span>
             </div>
-            }
           </div>
-          <div
-            class="peer-checked/opcionOffer2:visible invisible flex flex-col  absolute  bottom-[100%] left-[14%]  w-[200px] bg-slate-50 rounded-xl shadow-custom-shadow z-10">
+          <input
+            id="fileUpload"
+            type="file"
+            class="hidden"
+            (change)="seleccionarImagen($event)"
+            accept="image/*"
+          />
+        </label>
+      </div>
+
+      <!-- Detalles Básicos -->
+      <div class="space-y-6">
+        <div class="space-y-2">
+          <label class="font-google-anta text-2xl text-custom-primary"
+            >Nombre del Producto</label
+          >
+          <input
+            type="text"
+            formControlName="nombre"
+            placeholder="Ej: Smartphone Galaxy S21"
+            class="input-primary"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="font-google-anta text-2xl text-custom-primary"
+              >Precio (BOB)</label
+            >
+            <input
+              type="number"
+              formControlName="precio"
+              min="0"
+              step="0.01"
+              class="input-primary"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="font-google-anta text-2xl text-custom-primary"
+              >Descuento (%)</label
+            >
+            <input
+              type="number"
+              formControlName="descuento"
+              min="0"
+              max="100"
+              class="input-primary"
+            />
           </div>
         </div>
-        <button type="submit" class="h-[35%] w-[40%] rounded-xl bg-custom-primary border-4 shadow-xl">
-          <p class="text-white font-bold font-google-anta text-3xl py-4" style="text-shadow: 2px 2px black;">
-            Guardar
-          </p>
-        </button>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="font-google-anta text-2xl text-custom-primary"
+              >Stock</label
+            >
+            <input
+              type="number"
+              formControlName="stock"
+              min="0"
+              class="input-primary"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="font-google-anta text-2xl text-custom-primary"
+              >Estado</label
+            >
+            <select formControlName="estado" class="input-primary">
+              <option [ngValue]="true">Disponible</option>
+              <option [ngValue]="false">Agotado</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
-    <!-- FIN -->
-  </form>
 
-  <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
-  <script src="upload_widget.js" type="text/javascript"></script>
+    <!-- Descripción -->
+    <div class="space-y-2">
+      <label class="font-google-anta text-2xl text-custom-primary"
+        >Descripción</label
+      >
+      <textarea
+        formControlName="descripcion"
+        rows="4"
+        placeholder="Describe el producto detalladamente..."
+        class="input-primary resize-none"
+      ></textarea>
+    </div>
+
+    <!-- Categorías -->
+    <div class="space-y-4">
+      <label class="font-google-anta text-2xl text-custom-primary"
+        >Categorías</label
+      >
+      <div class="flex flex-wrap gap-3">
+        @for(categoria of categorias; track categoria) {
+        <button
+          type="button"
+          (click)="toggleCategoria(categoria)"
+          [class]="
+            isCategoriaSeleccionada(categoria)
+              ? 'badge-selected'
+              : 'badge-unselected'
+          "
+        >
+          {{ categoria }}
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Estadísticas (solo visible en edición) -->
+    @if(!productoService.isCreating()) {
+    <div class="grid grid-cols-2 gap-8 bg-gray-50 p-6 rounded-xl">
+      <div class="space-y-4">
+        <h4 class="font-google-anta text-2xl text-custom-primary">
+          Información de Ventas
+        </h4>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="stat-card">
+            <span class="text-sm text-gray-500">Unidades Vendidas</span>
+            <span class="text-2xl font-bold">{{
+              productoService.productoActual()?.vendidos || 0
+            }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="text-sm text-gray-500">Stock Actual</span>
+            <span class="text-2xl font-bold">{{
+              formProducto.get("stock")?.value || 0
+            }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-4">
+        <h4 class="font-google-anta text-2xl text-custom-primary">
+          Detalles del Producto
+        </h4>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="stat-card">
+            <span class="text-sm text-gray-500">Fecha de Creación</span>
+            <span class="text-lg">{{
+              productoService.productoActual()?.fechaCreacion | date
+            }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="text-sm text-gray-500">ID del Producto</span>
+            <span class="text-lg font-mono">{{
+              productoService.productoActual()?.id
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Botones de Acción con mejor espaciado -->
+    <div class="max-w-6xl mx-auto px-8 py-4 flex justify-end gap-4">
+      <button
+        type="button"
+        routerLink="/dashboard/lista-productos"
+        class="btn-secondary"
+      >
+        Cancelar
+      </button>
+      <button type="submit" [disabled]="loading()" class="btn-primary">
+        <span *ngIf="!loading()">{{
+          productoService.isCreating() ? "Crear Producto" : "Guardar Cambios"
+        }}</span>
+        <span *ngIf="loading()" class="flex items-center gap-2">
+          <div
+            class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"
+          ></div>
+          Procesando...
+        </span>
+      </button>
+    </div>
+  </form>
 </div>

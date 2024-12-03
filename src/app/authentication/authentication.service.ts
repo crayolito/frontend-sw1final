@@ -53,13 +53,14 @@ const MOCK_USERS: AuthUser[] = [
   ),
   new AuthUser(
     '2',
-    'https://i.pinimg.com/736x/86/02/f2/8602f241889540fa28051cf02a777285.jpg',
+    'maquio2024@karsaymarkt.com',
     'maquio2024',
     'Supervisor',
     'SUPER2024',
     {
       id: '2',
-      imagen: 'assets/cc-maquio.jpg',
+      imagen:
+        'https://res.cloudinary.com/da9xsfose/image/upload/v1733154789/lckm7hifz8zsfbcwaq7p.jpg',
       nombreComercial: 'Centro Comercial Maquió',
       nombreDueño: 'María Elena Suárez',
       horarioAtencion: '8:00 - 20:00',

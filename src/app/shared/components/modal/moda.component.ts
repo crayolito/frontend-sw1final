@@ -24,7 +24,7 @@ import { ModalService } from './modal.service';
           <div class="mb-8 flex justify-center">
             <!-- Error Icon -->
             <img
-              *ngIf="modalService.config?.title === 'Error'"
+              *ngIf="modalService.config?.title == 'Error'"
               src="assets/modal-error.png"
               class="h-32 w-32"
               alt="Error icon"
@@ -32,7 +32,7 @@ import { ModalService } from './modal.service';
 
             <!-- Success Icon -->
             <img
-              *ngIf="modalService.config?.title === 'Éxito'"
+              *ngIf="modalService.config?.title == 'Éxito'"
               src="assets/modal-correcto.png"
               class="h-32 w-32"
               alt="Success icon"
@@ -42,8 +42,8 @@ import { ModalService } from './modal.service';
           <!-- Título -->
           <h3
             class="text-center text-4xl font-bold  mb-4"
-            [class.text-red-600]="modalService.config?.title === 'Error'"
-            [class.text-green-600]="modalService.config?.title === 'Éxito'"
+            [class.text-red-600]="modalService.config?.title == 'Error'"
+            [class.text-green-600]="modalService.config?.title == 'Éxito'"
           >
             {{ modalService.config?.title }}
           </h3>
@@ -96,7 +96,7 @@ export class ModalComponent {
   public modalService = inject(ModalService);
 
   handleBackgroundClick(event: MouseEvent) {
-    if (event.target === event.currentTarget) {
+    if (event.target == event.currentTarget) {
       this.modalService.hide();
     }
   }

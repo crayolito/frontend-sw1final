@@ -6,7 +6,7 @@ export enum DashboardStatus {
   geolocalizacion = 'geolocalizacion',
   comerciantes = 'comerciantes',
   productos = 'productos',
-  politicas = 'politicas',
+  monitoreo = 'monitoreo',
   none = 'none',
 }
 

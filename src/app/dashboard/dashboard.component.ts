@@ -14,6 +14,7 @@ interface MenuItem {
   route: string;
   imagen: string;
   status: DashboardStatus;
+  isExternal?: boolean;
 }
 
 @Component({
@@ -40,6 +41,7 @@ export default class DashboardComponent implements OnInit {
     '/dashboard/lista-comerciantes': DashboardStatus.comerciantes,
     '/dashboard/lista-productos': DashboardStatus.productos,
     '/dashboard/producto': DashboardStatus.productos,
+    '/dashboard/monitoreo': DashboardStatus.monitoreo,
   };
 
   public readonly dashboardItemsSupervisor: MenuItem[] = [
@@ -82,6 +84,13 @@ export default class DashboardComponent implements OnInit {
       imagen: 'assets/productoDashboard.svg',
       status: DashboardStatus.productos,
     },
+    {
+      name: 'Monitoreo',
+      route: 'https://www.instagram.com/scump.ii_bo/',
+      imagen: 'assets/monitoreo.svg',
+      status: DashboardStatus.monitoreo,
+      isExternal: true,
+    },
   ];
 
   constructor() {
@@ -113,7 +122,7 @@ export default class DashboardComponent implements OnInit {
     }
 
     const isSupervisor =
-      this.authenticationService.statusAuthenticated() ===
+      this.authenticationService.statusAuthenticated() ==
       StatusAuthenticated.supervisor;
 
     this.dashboardItems.set(
@@ -123,9 +132,23 @@ export default class DashboardComponent implements OnInit {
     );
   }
 
+  public handleNavigation(item: MenuItem): void {
+    if (item.isExternal) {
+      // Abre en nueva pestaña y mantén la navegación actual
+      const newWindow = window.open(item.route, '_blank');
+      if (newWindow) {
+        newWindow.focus();
+      }
+      return; // Evita la navegación adicional
+    }
+
+    // Solo navega si es una ruta interna
+    this.router.navigate([item.route]);
+  }
+
   public actualizacionTitulos(status: DashboardStatus): void {
     if (
-      this.authenticationService.statusAuthenticated() ===
+      this.authenticationService.statusAuthenticated() ==
       StatusAuthenticated.supervisor
     ) {
       switch (status) {
@@ -157,18 +180,11 @@ export default class DashboardComponent implements OnInit {
           );
           this.titulo3.set('Explora y Descubre Nuevas Opciones de Compra');
           break;
-        case DashboardStatus.politicas:
-          this.titulo1.set('Políticas de la Empresa');
-          this.titulo2.set('Misión, Visión y Normas de Seguridad');
-          this.titulo3.set(
-            'Construye un Entorno Seguro y Confiable para Todos'
-          );
-          break;
       }
     }
 
     if (
-      this.authenticationService.statusAuthenticated() ===
+      this.authenticationService.statusAuthenticated() ==
       StatusAuthenticated.comerciante
     ) {
       switch (status) {
@@ -182,12 +198,10 @@ export default class DashboardComponent implements OnInit {
           this.titulo2.set('Administra y Promociona tus Productos');
           this.titulo3.set('Destaca tus Productos en el Centro Comercial');
           break;
-        case DashboardStatus.politicas:
-          this.titulo1.set('Normativas y Valores de la Empresa');
-          this.titulo2.set('Conoce las Reglas y Cultura de la Empresa');
-          this.titulo3.set(
-            'Alinea tu Negocio con los Principios de la Empresa'
-          );
+        case DashboardStatus.monitoreo:
+          this.titulo1.set('Panel de Monitoreo');
+          this.titulo2.set('Analiza el Rendimiento de tu Negocio');
+          this.titulo3.set('Toma Decisiones Basadas en Datos Reales');
           break;
       }
     }

@@ -1,5 +1,4 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import {
   Component,
   Inject,
@@ -18,10 +17,10 @@ import {
 import { Router, RouterModule } from '@angular/router';
 import {
   AuthenticationService,
+  AuthUser,
   StatusAuthenticated,
 } from '../../../../authentication/authentication.service';
-import { authComerciante } from '../data';
-import { PerfilService } from '../perfil.service';
+import { ModalService } from '../../../../shared/components/modal/modal.service';
 
 export interface IComerciante {
   id: string;
@@ -38,6 +37,7 @@ export interface IComerciante {
   urlWeb: string;
   categoria: string[];
 }
+
 @Component({
   selector: 'app-comerciante',
   standalone: true,
@@ -47,8 +47,7 @@ export interface IComerciante {
 })
 export default class ComercianteComponent implements OnInit {
   private authService = inject(AuthenticationService);
-  private perfilService = inject(PerfilService);
-  private http = inject(HttpClient);
+  private modalService = inject(ModalService);
   private formBuilder = inject(FormBuilder);
   private router = inject(Router);
   private isBrowser: boolean;
@@ -62,8 +61,10 @@ export default class ComercianteComponent implements OnInit {
   public categoriasProductos: string[] = [];
   public valueSelectEstado = '';
   public readonly difEstadoComerciante: string[] = ['Activo', 'Inactivo'];
+  public currentUser?: AuthUser;
 
   public formularioComerciante?: FormGroup;
+
   constructor(@Inject(PLATFORM_ID) platformId: Object) {
     this.isBrowser = isPlatformBrowser(platformId);
     this.initForm();
@@ -77,41 +78,45 @@ export default class ComercianteComponent implements OnInit {
       numeroAtencion: [0, [Validators.required]],
       coordenadaLongitud: ['', [Validators.required]],
       coordenadaLatitud: ['', [Validators.required]],
-      ubicacionDescriptiva: [0, [Validators.required]],
+      ubicacionDescriptiva: ['', [Validators.required]],
       urlGoogleMaps: ['', [Validators.required]],
       urlFormQuejas: ['', [Validators.required]],
       urlWeb: ['', [Validators.required]],
-      categoria: ['', [Validators.required]],
+      categoria: [''],
     });
   }
 
   ngOnInit(): void {
     if (this.isBrowser) {
-      const usuario = this.authService.getFromLocalStorage('usuarioLogin');
-      if (usuario) {
+      const userJson = this.authService.getFromLocalStorage('usuarioLogin');
+      if (userJson) {
+        this.currentUser = JSON.parse(userJson);
         this.initializeComerciante();
+      } else {
+        this.router.navigate(['/auth/login']);
       }
     }
   }
 
   private initializeComerciante(): void {
-    this.estadoImagen.set(true);
-    this.imageEmpresa.set(authComerciante.imagen);
-    this.perfilService.comercianteCaseta.set(authComerciante);
+    if (this.currentUser?.comerciante) {
+      this.estadoImagen.set(true);
+      this.imageEmpresa.set(this.currentUser.comerciante.imagen);
+      this.categoriasProductos = [...this.currentUser.comerciante.categoria];
 
-    this.formularioComerciante!.patchValue({
-      nombreNegocio: authComerciante.nombreNegocio,
-      nombreDueño: authComerciante.nombreDueño,
-      horarioAtencion: authComerciante.horarioAtencion,
-      numeroAtencion: authComerciante.numeroAtencion,
-      coordenadaLongitud: authComerciante.coordenadaLongitud,
-      coordenadaLatitud: authComerciante.coordenadaLatitud,
-      ubicacionDescriptiva: authComerciante.ubicacionDescriptiva,
-      urlGoogleMaps: authComerciante.urlGoogleMaps,
-      urlFormQuejas: authComerciante.urlFormQuejas,
-      urlWeb: authComerciante.urlWeb,
-      categoria: authComerciante.categoria,
-    });
+      this.formularioComerciante!.patchValue({
+        nombreNegocio: this.currentUser.comerciante.nombreNegocio,
+        nombreDueño: this.currentUser.comerciante.nombreDueño,
+        horarioAtencion: this.currentUser.comerciante.horarioAtencion,
+        numeroAtencion: this.currentUser.comerciante.numeroAtencion,
+        coordenadaLongitud: this.currentUser.comerciante.coordenadaLongitud,
+        coordenadaLatitud: this.currentUser.comerciante.coordenadaLatitud,
+        ubicacionDescriptiva: this.currentUser.comerciante.ubicacionDescriptiva,
+        urlGoogleMaps: this.currentUser.comerciante.urlGoogleMaps,
+        urlFormQuejas: this.currentUser.comerciante.urlFormQuejas,
+        urlWeb: this.currentUser.comerciante.urlWeb,
+      });
+    }
   }
 
   public updateSelectEstado(value: string): void {
@@ -123,31 +128,55 @@ export default class ComercianteComponent implements OnInit {
       this.authService.statusAuthenticated() === StatusAuthenticated.supervisor
     );
   }
+
   addCategoria(): void {
-    let categoria = this.formularioComerciante!.value.categoria;
-    this.categoriasProductos.push(categoria);
-    this.formularioComerciante!.controls['categoria'].setValue('');
+    const categoria = this.formularioComerciante!.get('categoria')?.value;
+    if (categoria && categoria.trim()) {
+      this.categoriasProductos.push(categoria.trim());
+      this.formularioComerciante!.get('categoria')?.setValue('');
+    }
   }
 
   eliminarCategoria(index: number): void {
     this.categoriasProductos.splice(index, 1);
   }
 
-  // NOTE : SELECCIONAR IMAGEN
   seleccionarImagen(event: any) {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      this.perfilService.uploadToCloudinary(file).subscribe({
-        next: (response: any) => {
-          this.imageEmpresa.set(response.secure_url);
-          this.estadoImagen.set(true);
-        },
-        error: (e: any) => {
-          console.log(e);
-        },
-      });
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        this.imageEmpresa.set(e.target.result);
+        this.estadoImagen.set(true);
+      };
+
+      reader.readAsDataURL(file);
     }
   }
 
-  procesarFormularioComerciante(): void {}
+  procesarFormularioComerciante(): void {
+    if (this.formularioComerciante!.valid) {
+      const formData = {
+        ...this.formularioComerciante!.value,
+        imagen: this.imageEmpresa(),
+        categoria: this.categoriasProductos,
+        id: this.currentUser?.comerciante?.id || '',
+      };
+
+      // Update the user in localStorage
+      if (this.currentUser) {
+        this.currentUser.comerciante = formData;
+        this.authService.saveToLocalStorage(
+          'usuarioLogin',
+          JSON.stringify(this.currentUser)
+        );
+        this.modalService.showSuccess('Datos actualizados correctamente');
+      }
+    } else {
+      this.modalService.showError(
+        'Por favor complete todos los campos requeridos'
+      );
+    }
+  }
 }

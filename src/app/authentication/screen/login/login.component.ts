@@ -57,7 +57,7 @@ export default class LoginComponent {
           this.authenticationService.confirmacionAuth.set(true);
 
           const esSupervisor =
-            responseAuthUser.role.toLowerCase() === 'supervisor';
+            responseAuthUser.role.toLowerCase() == 'supervisor';
           const ruta = esSupervisor
             ? '/dashboard/perfil-supervisor'
             : '/dashboard/perfil-comerciante';

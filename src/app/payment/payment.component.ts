@@ -97,23 +97,13 @@ export default class PaymentComponent {
       case StatusSubcripcion.premium:
         this.statusSubcripcion.set(select.estado);
         localStorage.setItem('venta', 'premium');
-        this.paymentService.procesarPago(
-          select.titulo,
-          34.9,
-          1,
-          'https://res.cloudinary.com/da9xsfose/image/upload/v1718291613/e7vj1snjneklw97nnnot.png'
-        );
+        this.paymentService.procesarPago('monthly', 349);
         this.router.navigate(['/auth/registro']);
         break;
       case StatusSubcripcion.empresial:
         this.statusSubcripcion.set(select.estado);
         localStorage.setItem('venta', 'empresial');
-        this.paymentService.procesarPago(
-          select.titulo,
-          314.1,
-          1,
-          'https://res.cloudinary.com/da9xsfose/image/upload/v1718291633/q5wjgt0rbaneds2ohwkh.png'
-        );
+        this.paymentService.procesarPago('annual', 3141);
         this.router.navigate(['/auth/registro']);
         break;
       default:
@@ -123,14 +113,71 @@ export default class PaymentComponent {
 
   pdfFree(): void {
     let doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text('DESFRUTE LA PRUEBAS GRATIS ', 10, 20);
+
+    // Título principal
+    doc.setFillColor(41, 128, 185); // Azul corporativo
+    doc.rect(0, 0, 210, 40, 'F');
+
+    doc.setTextColor(255, 255, 255); // Texto blanco
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('¡DISFRUTE LA PRUEBA GRATIS!', 105, 20, { align: 'center' });
+
+    // Contenido
+    doc.setTextColor(52, 73, 94); // Color texto oscuro
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'normal');
+    doc.text('RECUERDE: SOLO ES POR UN MES CON', 105, 60, { align: 'center' });
+    doc.text('LÍMITE DE REGISTRO', 105, 70, { align: 'center' });
+
+    // Línea decorativa
+    doc.setDrawColor(41, 128, 185);
+    doc.setLineWidth(0.5);
+    doc.line(30, 80, 180, 80);
+
+    // Sección de códigos
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('REGÍSTRESE CON ESTOS CÓDIGOS:', 105, 100, { align: 'center' });
+
+    // Cuadro para supervisor
+    doc.setDrawColor(52, 152, 219);
+    doc.setFillColor(236, 240, 241);
+    doc.roundedRect(20, 110, 170, 30, 3, 3, 'FD');
+
     doc.setFontSize(12);
-    doc.text('RECUERDE SOLO ES POR UN MES CON LIMITE DE REGISTRO', 10, 20);
-    doc.setFontSize(12);
-    doc.text('REGISTRESE CON ESTE CODIGO DE SUPERVIDOR', 10, 30);
-    doc.text('SUPERVIDOR : jjass_1s1o3f6t1w3a0r6e2024', 10, 40);
-    doc.text('COMERCIANTE : jjass_7s8a4h5o2n4e1r5o2s1al4a8s513', 10, 40);
+    doc.setTextColor(44, 62, 80);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SUPERVISOR:', 30, 125);
+    doc.setFont('helvetica', 'normal');
+    doc.text('jjass_1s1o3f6t1w3a0r6e2024', 100, 125);
+
+    // Cuadro para comerciante
+    doc.roundedRect(20, 150, 170, 30, 3, 3, 'FD');
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('COMERCIANTE:', 30, 165);
+    doc.setFont('helvetica', 'normal');
+    doc.text('jjass_7s8a4h5o2n4e1r5o2s1al4a8s513', 100, 165);
+
+    // Pie de página
+    doc.setFillColor(41, 128, 185);
+    doc.rect(0, 270, 210, 30, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.text('© 2024 - Documento generado automáticamente', 105, 285, {
+      align: 'center',
+    });
+
+    // Marca de agua
+    doc.setTextColor(230, 230, 230);
+    doc.setFontSize(60);
+    doc.text('TRIAL', 105, 150, {
+      align: 'center',
+      angle: 45,
+    });
+
     doc.save('suscripcion_empresarial.pdf');
   }
 }

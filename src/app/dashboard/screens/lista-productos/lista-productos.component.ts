@@ -1,112 +1,126 @@
+// lista-productos.component.ts
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { AuthenticationService, StatusAuthenticated } from '../../../authentication/authentication.service';
-import { IProducto, ProductoService } from '../producto/producto.service';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import {
+  AuthenticationService,
+  StatusAuthenticated,
+} from '../../../authentication/authentication.service';
+import { ModalService } from '../../../shared/components/modal/modal.service';
+import { IProducto } from '../producto/producto.service';
 import { ProductosService } from './lista-productos.service';
 
 @Component({
   selector: 'app-lista-productos',
   standalone: true,
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './lista-productos.component.html',
-  styleUrl: './lista-productos.component.css'
 })
 export default class ListaProductosComponent implements OnInit {
-  public productoService = inject(ProductoService);
-  public productosService = inject(ProductosService);
-  public authenticationService = inject(AuthenticationService);
+  public productosService = inject(ProductosService); // Cambiado a público
+  private authService = inject(AuthenticationService);
+  private modalService = inject(ModalService);
+  private router = inject(Router);
 
-  public viewProductosList: IProducto[] = [
-    {
-      id: '1',
-      nombre: 'Camiseta Deportiva',
-      precio: 25.99,
-      descuento: 5,
-      descripcion: 'Camiseta deportiva de alta calidad, perfecta para entrenamientos y actividades al aire libre.',
-      imagen: 'camiseta_deportiva.jpg',
-      estado: true
-    },
-    {
-      id: '2',
-      nombre: 'Auriculares Bluetooth',
-      precio: 49.99,
-      descuento: 10,
-      descripcion: 'Auriculares inalámbricos con sonido de alta fidelidad y batería de larga duración.',
-      imagen: 'auriculares_bluetooth.jpg',
-      estado: true
-    },
-    {
-      id: '3',
-      nombre: 'Mochila de Senderismo',
-      precio: 79.99,
-      descuento: 15,
-      descripcion: 'Mochila resistente al agua, ideal para caminatas y excursiones de varios días.',
-      imagen: 'mochila_senderismo.jpg',
-      estado: false
-    }
-  ];
+  public cargando = signal<boolean>(false);
+  public searchTerm = signal<string>('');
+  public currentPage = signal<number>(0);
+  public itemsPerPage = 7;
 
-  crearProducto(): void {
-    // this.productoService.statusProducto.set(StatusProducto.Crear);
+  get viewProductosList() {
+    const start = this.currentPage() * this.itemsPerPage;
+    return this.productosService
+      .productosFiltrados()
+      .slice(start, start + this.itemsPerPage);
   }
 
-  editarProducto(oferta: IProducto): void {
-    // localStorage.setItem('ofertaEnEdicion', JSON.stringify(oferta));
-    // this.productoService.statusProducto.set(StatusProducto.Editar);
+  get totalPages() {
+    return Math.ceil(
+      this.productosService.productosFiltrados().length / this.itemsPerPage
+    );
   }
-
-  esSupervisor(): boolean {
-    return this.authenticationService.statusAuthenticated() == StatusAuthenticated.supervisor;
-  }
-
-  nextElementos(): void {
-    // READ :  lista.slice(nroDev,nroNormal);
-    // READ : saber cuando elementos es nroNormal-nroDev
-    var aux1 = this.viewProductosList[this.viewProductosList.length - 1];
-    var aux2 = this.productosService.productosLista().indexOf(aux1);
-    let aux3: number = 0;
-
-    if ((aux2 + 1) + 7 > this.productosService.productosLista().length) {
-      aux3 = (aux2 + 1) - this.productosService.productosLista().length;
-      if (aux3 != 0) {
-        this.viewProductosList = this.productosService.productosLista().slice(aux3);
-      }
-      return;
-    }
-    this.viewProductosList = this.productosService.productosLista().slice(aux2 + 1, (aux2 + 1) + 7);
-  }
-
-
-
-  backElementos(): void {
-    var aux1 = this.viewProductosList[0];
-    var aux2 = this.productosService.productosLista().indexOf(aux1);
-    var aux3 = aux2 - 7;
-    if (aux3 >= 0) {
-      console.log("entro back");
-      this.viewProductosList = this.productosService.productosLista().slice(aux2 - 7, aux2);
-    }
-  }
-
 
   ngOnInit(): void {
-    // if (typeof window !== 'undefined' && 'localStorage' in window && localStorage.getItem('agenciaAlojamientoId') !== null) {
-    //   var agenciaAlojamientoId: string = localStorage.getItem('agenciaAlojamientoId')!;
-    // } else {
-    //   return;
-    // }
-    // this.productosService.getOfertasAgenciAlojamiento(agenciaAlojamientoId)
-    //   .subscribe({
-    //     next: (listaOfertas: Oferta[]) => {
-    //       // this.productosService.productosLista.set([...listaOfertas, ...listaOfertas]);
-    //       this.productosService.productosLista.set(listaOfertas);
-    //       console.log(this.productosService.productosLista());
-    //       this.viewProductosList = this.productosService.productosLista().slice(0, 7);
-    //     },
-    //     error: (error: any) => {
-    //       console.log(error);
-    //     },
-    //   });
+    this.cargarProductos();
+  }
+
+  // Método para trackBy
+  public trackById(index: number, item: IProducto): string {
+    return item.id;
+  }
+
+  // Método para crear producto
+  public crearProducto(): void {
+    // Implementa la lógica para crear producto
+    this.router.navigate(['/dashboard/producto']);
+  }
+
+  // Método para verificar si es supervisor
+  public esSupervisor(): boolean {
+    return (
+      this.authService.statusAuthenticated() == StatusAuthenticated.supervisor
+    );
+  }
+
+  // Método para editar producto
+  public editarProducto(producto: IProducto): void {
+    localStorage.setItem('productoEnEdicion', JSON.stringify(producto));
+    this.router.navigate(['/dashboard/producto']);
+  }
+
+  private async cargarProductos(): Promise<void> {
+    this.cargando.set(true);
+    try {
+      const productos = await this.productosService.getProductos().toPromise();
+      this.cargando.set(false);
+    } catch (error) {
+      this.modalService.showError('Error al cargar los productos');
+      this.cargando.set(false);
+    }
+  }
+
+  public search(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(value);
+    this.productosService.updateFiltros({ search: value });
+    this.currentPage.set(0);
+  }
+
+  public toggleEstado(producto: IProducto): void {
+    this.productosService
+      .updateProducto(producto.id, {
+        estado: !producto.estado,
+      })
+      .subscribe({
+        error: () =>
+          this.modalService.showError('Error al actualizar el estado'),
+      });
+  }
+
+  public async deleteProducto(producto: IProducto): Promise<void> {
+    if (
+      await this.modalService.showSuccess(
+        '¿Estás seguro de eliminar este producto?'
+      )
+    ) {
+      this.productosService.deleteProducto(producto.id).subscribe({
+        next: () => this.modalService.showSuccess('Producto eliminado'),
+        error: () =>
+          this.modalService.showError('Error al eliminar el producto'),
+      });
+    }
+  }
+
+  public nextPage(): void {
+    if (this.currentPage() < this.totalPages - 1) {
+      this.currentPage.update((page) => page + 1);
+    }
+  }
+
+  public prevPage(): void {
+    if (this.currentPage() > 0) {
+      this.currentPage.update((page) => page - 1);
+    }
   }
 }

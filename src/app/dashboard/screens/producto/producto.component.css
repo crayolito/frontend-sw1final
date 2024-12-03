@@ -20,3 +20,41 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+
+
+.input-primary {
+  @apply w-full px-4 py-3 rounded-xl border-2 border-gray-300
+         focus:outline-none focus:border-custom-primary focus:ring-2
+         focus:ring-custom-primary/20 transition-all duration-200
+         font-google-anta text-lg;
+}
+
+.btn-primary {
+  @apply px-6 py-3 bg-custom-primary text-white font-google-anta
+         rounded-xl border-4 shadow-xl hover:bg-green-600
+         disabled:opacity-50 disabled:cursor-not-allowed
+         transition-all duration-200 text-lg;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-gray-100 text-gray-700 font-google-anta
+         rounded-xl border-2 border-gray-300 hover:bg-gray-200
+         transition-all duration-200 text-lg;
+}
+
+.badge-selected {
+  @apply px-4 py-2 rounded-full bg-custom-primary text-white
+         font-google-anta text-sm hover:bg-green-600
+         transition-all duration-200;
+}
+
+.badge-unselected {
+  @apply px-4 py-2 rounded-full bg-gray-100 text-gray-700
+         font-google-anta text-sm hover:bg-gray-200
+         transition-all duration-200;
+}
+
+.stat-card {
+  @apply flex flex-col p-4 bg-white rounded-lg border border-gray-200;
+}
