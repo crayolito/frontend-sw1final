@@ -1,5 +1,10 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 
 interface PaymentResponse {
   cancelUrl: string;
@@ -12,11 +17,14 @@ interface PaymentResponse {
 })
 export class PaymentService {
   private http = inject(HttpClient);
-  private subscriptionApiUrl =
-    'https://355d-177-222-98-124.ngrok-free.app/api/suscriptions';
+  private subscriptionApiUrl = 'http://143.198.56.179:3000/api/suscriptions';
   private headers = new HttpHeaders().set('Content-Type', 'application/json');
 
-  procesarPago(titulo: string, mount: number) {
+  async procesarPago(titulo: string, mount: number): Promise<void> {
+    if (!titulo || mount <= 0) {
+      throw new Error('Datos de pago inválidos');
+    }
+
     const subscriptionBody = {
       title: titulo,
       mount: mount,
@@ -24,16 +32,45 @@ export class PaymentService {
       mallId: 1,
     };
 
-    console.log(subscriptionBody);
-    return this.http
-      .post<PaymentResponse>(this.subscriptionApiUrl, subscriptionBody, {
-        headers: this.headers,
-      })
-      .subscribe({
-        next: (response) => {
-          window.open(response.url, '_blank');
-        },
-        error: (error) => console.error('Error:', error),
-      });
+    try {
+      const response = await firstValueFrom(
+        this.http.post<PaymentResponse>(
+          this.subscriptionApiUrl,
+          subscriptionBody,
+          { headers: this.headers }
+        )
+      );
+
+      if (!response) {
+        throw new Error('No se recibió respuesta del servidor');
+      }
+
+      if (!response.url) {
+        throw new Error('URL de pago no disponible');
+      }
+
+      const ventana = window.open(response.url, '_blank');
+      if (!ventana) {
+        throw new Error(
+          'El navegador bloqueó la apertura de la ventana de pago'
+        );
+      }
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        switch (error.status) {
+          case 400:
+            throw new Error('Datos de pago inválidos');
+          case 401:
+            throw new Error('No autorizado para realizar el pago');
+          case 404:
+            throw new Error('Servicio de pago no encontrado');
+          case 500:
+            throw new Error('Error en el servidor de pagos');
+          default:
+            throw new Error(`Error en el servidor: ${error.message}`);
+        }
+      }
+      throw error;
+    }
   }
 }

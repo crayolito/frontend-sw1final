@@ -86,7 +86,7 @@ export default class DashboardComponent implements OnInit {
     },
     {
       name: 'Monitoreo',
-      route: 'https://www.instagram.com/scump.ii_bo/',
+      route: 'http://143.198.56.179:4000',
       imagen: 'assets/monitoreo.svg',
       status: DashboardStatus.monitoreo,
       isExternal: true,
